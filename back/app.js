@@ -1,29 +1,12 @@
-const dotenv = require("dotenv");
-dotenv.config();
 const express = require("express");
-const mongoose = require("mongoose");
 const app = express();
-const userRoutes = require("./routes/user");
-const productRoutes = require("./routes/sauce");
-const likeRoutes = require("./routes/like");
-const path = require("path");
-const { dirname } = require("path");
+const db = require("./mysql_config");
+// const userRoutes = require("./routes/user");
+// const productRoutes = require("./routes/sauce");
+// const likeRoutes = require("./routes/like");
+// const path = require("path");
+// const { dirname } = require("path");
 
-//connecting to database
-// const USER_NAME = process.env.USER_NAME;
-// const PASSWORD_MONGO = process.env.PASSWORD_MONGO;
-// const CLUSTER = process.env.CLUSTER;
-// const DATABASE = process.env.DATABASE;
-// mongoose
-//   .connect(
-//     `mongodb+srv://${USER_NAME}:${PASSWORD_MONGO}@${CLUSTER}.2texb.mongodb.net/${DATABASE}?retryWrites=true&w=majority`,
-//     {
-//       useNewUrlParser: true,
-//       useUnifiedTopology: true,
-//     }
-//   )
-//   .then(() => console.log("Connection successful"))
-//   .catch(() => console.log("connection failed"));
 //getting the body of the request
 app.use(express.json());
 //declaring headers so API communication works
