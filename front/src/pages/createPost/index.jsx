@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function NewPost() {
+export default function createPost() {
   return (
     <div>
       <form>

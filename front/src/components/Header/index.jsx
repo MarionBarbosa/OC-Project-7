@@ -9,6 +9,7 @@ export default function Header() {
       <Link to="/home">
         <img src={Logo} alt="logo" className="header--logo" />
       </Link>
+      <Link to="/createPost">Nouvelle publication</Link>
       <SearchBar />
       <section>
         <div>pic</div>
