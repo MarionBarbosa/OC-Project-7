@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const db = require("./mysql_config");
 const userRoutes = require("./routes/user");
-// const productRoutes = require("./routes/sauce");
+const postRoutes = require("./routes/post");
 // const likeRoutes = require("./routes/like");
 // const path = require("path");
 // const { dirname } = require("path");
@@ -25,6 +25,6 @@ app.use((req, res, next) => {
 
 // app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", userRoutes);
-// app.use("/api/sauces", productRoutes);
+app.use("/api/post", postRoutes);
 // app.use("/api/sauces", likeRoutes);
 module.exports = app;
