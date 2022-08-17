@@ -10,6 +10,7 @@ export default function SignUp() {
   function isValidEmail(value) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
   }
+
   //checking password is valid
   // function isValidPassword(event) {
   //   const isWhitespace = /^(?=.*\s)/;
@@ -56,7 +57,9 @@ export default function SignUp() {
 
   function handleChangeEmail(event) {
     if (!isValidEmail(event.target.value)) {
-      setErrorEmail(`L'adresse email n'est pas valable`);
+      setErrorEmail(
+        `Veuillez respecter le format du courriel (example@email.com).`
+      );
     } else {
       setErrorEmail(null);
     }
@@ -80,10 +83,6 @@ export default function SignUp() {
       },
       body: JSON.stringify(formData),
     });
-
-    //emptying the form after validation
-    // emailRef.current.value = "";
-    // passwordRef.current.value = "";
   }
   return (
     <section className="signIn">
@@ -93,7 +92,7 @@ export default function SignUp() {
           type="email"
           placeholder="Email"
           ref={emailRef}
-          onChange={handleChangeEmail}
+          onBlur={handleChangeEmail}
         />
         {errorEmail && <p style={{ color: "red" }}>{errorEmail}</p>}
         <input
@@ -104,7 +103,7 @@ export default function SignUp() {
         />
         {/* {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>} */}
         {/* <input type="password" placeholder="Confirmez mot de passe" /> */}
-        <button className="signIn--button" onClick={submitAccount}>
+        <button className="signIn--button" onSubmit={submitAccount}>
           S'inscrire
         </button>
       </form>
