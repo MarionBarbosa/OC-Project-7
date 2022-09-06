@@ -38,20 +38,28 @@ function checkPasswordValidation(value) {
 
 exports.signup = (req, res) => {
   //checking if the password is strong, if so password goes through Bcrypt
-  // if (checkPasswordValidation(req.body.password) == null) {
+  // if (checkPasswordValidation(req.body.password) == null)
   const email = req.body.email;
   const password = req.body.password;
+  const firstName = req.body.firstName;
+  const lastName = req.body.lastName;
   bcrypt
     .hash(password, 10)
     .then((hash) => {
-      const user = new User(email, hash);
-      db.query(`INSERT INTO user SET ?`, user, (error, results) => {
-        if (error) {
-          res.json({ error });
-        } else {
-          res.json({ message: "utilisateur enregistre" });
+      const user = new User(firstName, lastName, email, hash);
+      db.query(
+        `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?`,
+        [user.firstName, user.lastName, user.email, user.password],
+        (error, results) => {
+          if (error) {
+            res.json({ error });
+          } else {
+            res.status(200).json({
+              message: "user created",
+            });
+          }
         }
-      });
+      );
     })
     .catch((error) => res.status(500).json({ error }));
   //}
@@ -67,6 +75,7 @@ exports.login = (req, res) => {
   //finding email in database
   const email = req.body.email;
   db.query("SELECT * FROM user WHERE email=?", email, (error, results) => {
+    console.log(results);
     if (error) {
       res.json({ error });
     } else if (results == 0) {
