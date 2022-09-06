@@ -79,7 +79,7 @@ exports.login = (req, res) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
-      return res.status(404).json({ error: "Utilisateur non trouve" });
+      return res.status(404).json({ error: "User not found" });
     } else {
       //comparing password to allow user connection
       const password = results[0].password;
@@ -87,7 +87,7 @@ exports.login = (req, res) => {
         .compare(req.body.password, password)
         .then((valid) => {
           if (!valid) {
-            res.status(401).json({ message: "mot de passe incorrect" });
+            res.status(401).json({ message: "wrong password" });
           } else {
             //issuing a token to allow access throughout website
             res.status(200).json({
