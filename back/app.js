@@ -3,9 +3,10 @@ const app = express();
 const db = require("./mysql_config");
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
-// const likeRoutes = require("./routes/like");
-// const path = require("path");
-// const { dirname } = require("path");
+const likeRoutes = require("./routes/like");
+const commentRoutes = require("./routes/comment");
+const path = require("path");
+const { dirname } = require("path");
 
 //getting the body of the request
 app.use(express.json());
@@ -23,8 +24,9 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.use("/images", express.static(path.join(__dirname, "images")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/auth", userRoutes);
 app.use("/api/post", postRoutes);
-// app.use("/api/sauces", likeRoutes);
+app.use("/api/post", likeRoutes);
+app.use("/api/post/comment", commentRoutes);
 module.exports = app;
