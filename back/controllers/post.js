@@ -8,7 +8,7 @@ exports.createPost = (req, res, next) => {
   const postObject = JSON.parse(req.body.post);
   //checking if the userId is the same to authorise new post, if not matching throw err
   if (postObject.userId !== req.auth.userId) {
-    res.status(401).json({ message: "Accès non autorisé" });
+    res.status(401).json({ message: "Access denied" });
   } else {
     const post = new Post({
       ...postObject,
@@ -25,9 +25,9 @@ exports.createPost = (req, res, next) => {
         if (error) {
           res.json({ error });
         } else if (results == 0) {
-          return res.status(404).json({ error: "Post non cree" });
+          return res.status(404).json({ error: "Post not created" });
         } else {
-          res.status(201).json({ message: "post enregistre" });
+          res.status(201).json({ message: "post created" });
         }
       }
     );
@@ -39,7 +39,7 @@ exports.getAllPosts = (req, res, next) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
-      return res.status(404).json({ error: "Post non trouve" });
+      return res.status(404).json({ error: "Post not found" });
     } else {
       res.status(200).json({ results });
     }
@@ -49,7 +49,7 @@ exports.getAllPosts = (req, res, next) => {
 //MODIFYING POST
 exports.modifyPost = (req, res, next) => {
   //getting body of the request
-  const postObject = req.file //case where the reauest contains a file
+  const postObject = req.file //case where the request contains a file
     ? {
         ...JSON.parse(req.body.post),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
@@ -63,9 +63,9 @@ exports.modifyPost = (req, res, next) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
-      return res.status(404).json({ error: "Post inexistant" });
+      return res.status(404).json({ error: "Post not found" });
     } else if (postObject.userId !== req.auth.userId) {
-      return res.status(400).json({ message: "acces refuse" });
+      return res.status(400).json({ message: "access denied" });
     } else {
       //getting he old image name in case it needs deleting
       const oldFilename = results[0].imageUrl.split("/images/")[1];
@@ -82,13 +82,13 @@ exports.modifyPost = (req, res, next) => {
               if (error) {
                 res.json({ error });
               } else if (results == 0) {
-                return res.status(404).json({ error: "Post non modifie" });
+                return res.status(404).json({ error: "Post not modified" });
               } else {
                 //deleting previous image
                 fs.unlink(`images/${oldFilename}`, (err) => {
-                  message: "Image non supprimée";
+                  message: "Image not deleted";
                 });
-                res.status(200).json({ message: "post modifie" });
+                res.status(200).json({ message: "post modified" });
               }
             }
           )
@@ -100,9 +100,9 @@ exports.modifyPost = (req, res, next) => {
               if (error) {
                 res.json({ error });
               } else if (results == 0) {
-                return res.status(404).json({ error: "Post non modifie" });
+                return res.status(404).json({ error: "Post not modified" });
               } else {
-                res.status(200).json({ message: "post modifie" });
+                res.status(200).json({ message: "post modified" });
               }
             }
           );
@@ -117,9 +117,9 @@ exports.deletePost = (req, res, next) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
-      return res.status(404).json({ error: "Post inexistant" });
+      return res.status(404).json({ error: "Post not found" });
     } else if (post.userId !== req.auth.userId) {
-      return res.status(400).json({ message: "acces refuse" });
+      return res.status(400).json({ message: "access denied" });
     } else {
       //deleting image
       const filename = post.imageUrl.split("/images/")[1];
@@ -128,111 +128,12 @@ exports.deletePost = (req, res, next) => {
           if (error) {
             res.json({ error });
           } else if (results == 0) {
-            return res.status(404).json({ error: "Post non supprime" });
+            return res.status(404).json({ error: "Post not deleted" });
           } else {
-            res.status(200).json({ message: "post supprime " });
+            res.status(200).json({ message: "post deleted " });
           }
         });
       });
     }
   });
 };
-
-// exports.createPost = (req, res, next) => {
-//   const postObject = JSON.parse(req.body.post);
-
-//   if (postObject.userId !== req.auth.userId) {
-//     res.status(401).json({ message: "Accès non autorisé" });
-//   } else {
-//     const post = new Post({
-//       ...postObject,
-//       imageUrl: `${req.protocol}://${req.get("host")}/images/${
-//         req.file.filename
-//       }`,
-//       likes: 0,
-//       dislikes: 0,
-//       usersLiked: [],
-//       usersDisliked: [],
-//     });
-//     post
-//       .save()
-//       .then(() =>
-//         res.status(201).json({ message: "Publication Enregistrée !" })
-//       )
-//       .catch((error) => res.status(400).json({ error }));
-//   }
-// };
-// exports.getAllPosts = (req, res, next) => {
-//   Post.find()
-//     .then((posts) => res.status(200).json(posts))
-//     .catch((error) => res.status(404).json({ error }));
-// };
-// exports.getOnePost = (req, res, next) => {
-//   Post.findOne({ _id: req.params.id })
-//     .then((post) => res.status(200).json(post))
-//     .catch((error) => res.status(404).json({ error }));
-// };
-// exports.modifyPost = (req, res, next) => {
-//   Post.findOne({ _id: req.params.id })
-//     .then((post) => {
-//       //getting the image from the post
-//       const oldFilename = post.imageUrl.split("/images/")[1];
-//       //returning error is there is no post found
-//       if (!post) {
-//         res.status(404).json({ message: "Publication non trouvée" });
-//       }
-//       //checking that if the userId from the post and from the request are different and if so not allowing access
-//       if (post.userId !== req.auth.userId) {
-//         res.status(401).json({ message: "Accès non autorisé" });
-//       } else {
-//         // after all the previous checks the post can be updated
-//         //getting new data and/or image
-//         const postObject = req.file
-//           ? {
-//               ...JSON.parse(req.body.post),
-//               imageUrl: `${req.protocol}://${req.get("host")}/images/${
-//                 req.file.filename
-//               }`,
-//             }
-//           : { ...req.body };
-//         //update post with new data and/or image
-
-//         Post.updateOne(
-//           { _id: req.params.id },
-//           { ...postObject, _id: req.params.id }
-//         )
-//           .then(() => {
-//             fs.unlink(`images/${oldFilename}`, (err) => {
-//               message: "Image non supprimée";
-//             });
-//             res.status(200).json({ message: "Publication modifiée" });
-//           })
-//           .catch((error) => res.status(400).json({ error }));
-//       }
-//     })
-
-//     .catch((error) => res.status(500).json({ error }));
-// };
-// exports.deletePost = (req, res, next) => {
-//   Post.findOne({ _id: req.params.id })
-//     .then((post) => {
-//       if (!post) {
-//         res.status(404).json({ message: "Publication non trouvée" });
-//       }
-//       //checking that if the userId from the post and from the request are different and if so not allowing access
-//       if (post.userId !== req.auth.userId) {
-//         res.status(401).json({ message: "Accès non autorisé" });
-//       }
-//       //deleting image
-//       const filename = post.imageUrl.split("/images/")[1];
-//       fs.unlink(`images/${filename}`, () => {
-//         //deleting post from website and DB
-//         Post.deleteOne({ _id: req.params.id })
-//           .then(() =>
-//             res.status(200).json({ message: "Publication supprimée" })
-//           )
-//           .catch((error) => res.status(400).json({ error }));
-//       });
-//     })
-//     .catch((error) => res.status(500).json({ error }));
-// };
