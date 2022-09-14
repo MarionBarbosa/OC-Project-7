@@ -1,7 +1,7 @@
 const db = require("../mysql_config");
 //if like =1 check not already liked in database
 //if like=-1 delete like from database
-exports.like = (req, res, next) => {
+exports.createLike = (req, res, next) => {
   let userId = req.body.userId;
   let postId = req.body.postId;
   let like = req.body.like;
@@ -45,4 +45,17 @@ exports.like = (req, res, next) => {
       }
     }
   );
+};
+exports.getAllLike = (req, res, next) => {
+  //get all likes for ONE post
+  const postId = req.params.postId;
+  db.query("SELECT * FROM liked WHERE postId=?", postId, (error, results) => {
+    if (error) {
+      res.json({ error });
+    } else if (results == 0) {
+      return res.status(404).json({ message: "likes not found" });
+    } else {
+      res.status(200).json({ results });
+    }
+  });
 };
