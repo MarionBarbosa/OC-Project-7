@@ -1,12 +1,10 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 import Post from "../../components/Post";
-//import { useEffect } from "react";
 export default function Feed() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState();
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState();
   //getting all posts
   useEffect(() => {
     //setLoading(true);
@@ -17,7 +15,6 @@ export default function Feed() {
         }
       })
       .then((postData) => {
-        console.log(postData.results);
         setData(postData.results);
       });
     // .catch(function(err) {
@@ -37,6 +34,9 @@ export default function Feed() {
   const postElements = data.map((post) => {
     return (
       <Post
+        key={post.id}
+        postId={post.id}
+        userId={post.userId}
         timestamp={post.created_at}
         title={post.title}
         content={post.content}
