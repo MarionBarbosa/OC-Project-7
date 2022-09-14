@@ -9,7 +9,7 @@ const db = require("../mysql_config");
 exports.createComment = (req, res, next) => {
   //getting all data for new post from frontend
   const commentObject = req.body;
-  console.log(commentObject);
+  console.log(commentObject.userId);
   //checking if the userId is the same to authorise new comment, if not matching throw err
   if (commentObject.userId !== req.auth.userId) {
     res.status(401).json({ message: "Access denied" });
@@ -39,20 +39,16 @@ exports.createComment = (req, res, next) => {
 
 exports.getAllComment = (req, res, next) => {
   //get all comments for ONE post
-  const comment = req.body;
-  db.query(
-    "SELECT * FROM comment WHERE postId=?",
-    comment.postId,
-    (error, results) => {
-      if (error) {
-        res.json({ error });
-      } else if (results == 0) {
-        return res.status(404).json({ error: "comments not found" });
-      } else {
-        res.status(200).json({ results });
-      }
+  const postId = req.params.postId;
+  db.query("SELECT * FROM comment WHERE postId=?", postId, (error, results) => {
+    if (error) {
+      res.json({ error });
+    } else if (results == 0) {
+      return res.status(404).json({ message: "comments not found" });
+    } else {
+      res.status(200).json({ results });
     }
-  );
+  });
 };
 exports.modifyComment = (req, res, next) => {
   const comment = req.body;
