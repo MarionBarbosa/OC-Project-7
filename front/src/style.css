@@ -42,6 +42,7 @@ input {
   border: 3px solid #4e5166;
   border-radius: 5px;
   padding: 10px;
+  margin-top: 20px;
 }
 .post--profile {
   display: flex;
@@ -80,11 +81,14 @@ input {
   padding: 5px;
   position: relative;
 }
-.post--image {
+.post--image--container {
   border: 1px solid #4e5166;
   width: 100%;
   height: 100px;
   border-radius: 5px;
+}
+.post--image--container img {
+  height: 100%;
 }
 .post--text {
   border: 1px solid #4e5166;
@@ -105,15 +109,48 @@ input {
   display: flex;
   column-gap: 10px;
 }
-.post--comments,
+.post--showComments,
 .post--like {
   margin-bottom: 10px;
   width: 100%;
 }
-.post--comments button,
+.post--showComments button,
 .post--like button {
   width: 100%;
   background-color: transparent;
   border: none;
   font-size: 18px;
+}
+.post--comment {
+  border: 1px solid black;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+.modal--background {
+  background-color: #4e5166;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal--container {
+  background-color: #ffd7d7;
+  box-shadow: black 0px 5px 15px;
+  height: 200px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+.modal--button {
+  display: flex;
+  flex-direction: row;
+  column-gap: 30px;
+  margin-top: 20px;
 }
