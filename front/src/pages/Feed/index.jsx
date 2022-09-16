@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
+import ModalDelete from "../../components/ModalDelete";
+import ModalModify from "../../components/ModalModify";
 import Post from "../../components/Post";
 export default function Feed() {
+  const [modalDelete, setModalDelete] = useState(false);
+  const [modalModify, setModalModify] = useState(false);
+
   const [data, setData] = useState([]);
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState();
@@ -41,13 +46,17 @@ export default function Feed() {
         title={post.title}
         content={post.content}
         imageUrl={post.imageUrl}
+        showModalDelete={setModalDelete}
+        showModalModify={setModalModify}
       />
     );
   });
   return (
-    <div>
+    <>
+      {modalModify && <ModalModify closeModalModify={setModalModify} />}
+      {modalDelete && <ModalDelete closeModalDelete={setModalDelete} />}
       <Header />
       {postElements}
-    </div>
+    </>
   );
 }
