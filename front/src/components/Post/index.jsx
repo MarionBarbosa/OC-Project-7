@@ -4,6 +4,8 @@ import { FaRegThumbsUp, FaRegCommentAlt } from "react-icons/fa";
 import Comments from "../Comments/index";
 import NewComment from "../NewComment";
 export default function Post(props) {
+  const postUserId = props.userId;
+  const loggedUserId = 1;
   function handleClick() {
     setShowMenu((prevShowMenu) => !prevShowMenu);
   }
@@ -14,13 +16,12 @@ export default function Post(props) {
   //Clicking on the comment icon shows the comments or hides them
   const [showComments, setShowComments] = useState(false);
 
-  function handleClickComments(event) {
+  function handleClickComments() {
     setShowComments((prevShowComments) => !prevShowComments);
   }
 
   //fetch all comments for each post
   useEffect(() => {
-    console.log(props.postId);
     fetch(`http://localhost:3001/api/post/comment/${props.postId}`)
       .then(function(res) {
         if (res.ok) {
@@ -31,7 +32,6 @@ export default function Post(props) {
         if (!getCommentData) {
           return setCommentCount(0);
         } else {
-          console.log(getCommentData.results);
           setCommentData(getCommentData.results);
           setCommentCount(getCommentData.results.length);
         }
@@ -42,6 +42,7 @@ export default function Post(props) {
       <Comments
         key={comment.id}
         commentId={comment.id}
+        commentUserId={comment.userId}
         timestamp={comment.created_at}
         content={comment.content}
       />
@@ -121,7 +122,15 @@ export default function Post(props) {
         });
     }
   }
-
+  //function to open the modal windows on delete and modify on the Posts
+  function modalDelete() {
+    props.showModalDelete(true);
+    setShowMenu(false);
+  }
+  function modalModify() {
+    props.showModalModify(true);
+    setShowMenu(false);
+  }
   return (
     <section className="post">
       <div className="post--profile">
@@ -130,20 +139,30 @@ export default function Post(props) {
           <div className="post--profile--name">NAME</div>
           <div>{props.timestamp}</div>
         </div>
-        <div className="post--collapsibleMenu">
-          <button onClick={handleClick}>+</button>
-          {showMenu ? (
-            <div className="post--collapsibleMenu--option">
-              <p>Modifier la publication</p>
-              <p>Supprimer la publication</p>
-            </div>
-          ) : null}
-        </div>
+        {postUserId === loggedUserId ? (
+          <div className="post--collapsibleMenu">
+            <button onClick={handleClick}>+</button>
+            {showMenu ? (
+              <div className="post--collapsibleMenu--option">
+                <button id={props.postId} onClick={modalModify}>
+                  Modifier
+                </button>
+                <button id={props.postId} onClick={modalDelete}>
+                  Supprimer
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
       <div>
         <div className="post--title">{props.title}</div>
         <div className="post--image--container">
-          <img className="post--image" src={`${props.imageUrl}`} />
+          <img
+            className="post--image"
+            src={`${props.imageUrl}`}
+            alt="publication"
+          />
         </div>
 
         <div className="post--text">{props.content}</div>
