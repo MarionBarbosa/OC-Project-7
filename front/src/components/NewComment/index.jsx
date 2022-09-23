@@ -3,7 +3,7 @@ import { useState } from "react";
 //import { useState, useEffect } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 
-export default function NewComment() {
+export default function NewComment(props) {
   const [formData, setFormData] = useState({ commentContent: "" });
 
   function handleChange(event) {
@@ -16,10 +16,10 @@ export default function NewComment() {
   }
   const urlComment = "http://localhost:3001/api/post/comment";
 
-  const userId = 1;
+  const userId = props.userId;
   function handleClick(event) {
     event.preventDefault();
-    const postId = 16;
+    const postId = props.postId;
     const content = formData.commentContent;
     fetch(urlComment, {
       method: "POST",
@@ -27,10 +27,21 @@ export default function NewComment() {
         "Content-Type": "application/json;charset=UTF-8",
       },
       body: JSON.stringify({ userId, postId, content }),
-    });
-    setFormData({ commentContent: "" });
+    })
+      .then(function(res) {
+        if (res.ok) {
+          return res.json();
+        } else {
+          return console.log("not working");
+        }
+      })
+      .then((comment) => {
+        props.updateComment(comment.results[0]);
+        //setFormData({ commentContent: "" });
+      });
   }
 
+  //fetch("http://localhost:3001/api/post/comment");
   return (
     <>
       <input
@@ -42,7 +53,7 @@ export default function NewComment() {
         value={formData.commentContent}
       />
       <button>
-        <FaArrowCircleRight onClick={handleClick} />
+        <FaArrowCircleRight onClick={handleClick} id={props.postId} />
       </button>
     </>
   );
