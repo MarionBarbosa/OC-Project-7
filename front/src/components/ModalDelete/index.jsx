@@ -4,13 +4,12 @@ export default function ModalDelete(props) {
   function handleClickDelete(event) {
     event.preventDefault();
     console.log(event.currentTarget.id);
-    // const postId = event.currentTarget.id;
-    // const urlDeletePost =`http://localhost:3001/api/post/${postId}`;
-    //  fetch(urlDeletePost, {
-    //   method: "DELETE",
-    //   headers: { "Content-Type": "application/json;charset=UTF-8" },
-    //   body: JSON.parse({ postId }),
-    // });
+    const postId = event.currentTarget.id;
+    const urlDeletePost = `http://localhost:3001/api/post/${postId}`;
+    fetch(urlDeletePost, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json;charset=UTF-8" },
+    });
   }
   return (
     <div className="modal--background">
