@@ -3,15 +3,19 @@ import { useState, useEffect } from "react";
 import { FaRegThumbsUp, FaRegCommentAlt } from "react-icons/fa";
 import Comments from "../Comments/index";
 import NewComment from "../NewComment";
+import ModalDelete from "../../components/ModalDelete";
+import ModalModify from "../../components/ModalModify";
 export default function Post(props) {
   const postUserId = props.userId;
   const loggedUserId = 1;
   function handleClick() {
     setShowMenu((prevShowMenu) => !prevShowMenu);
   }
+  const [modalDelete, setModalDelete] = useState(false);
+  const [modalModify, setModalModify] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [commentData, setCommentData] = useState([]);
   const [commentCount, setCommentCount] = useState();
+
   //*******************COMMENT***************************
   //Clicking on the comment icon shows the comments or hides them
   const [showComments, setShowComments] = useState(false);
@@ -19,25 +23,12 @@ export default function Post(props) {
   function handleClickComments() {
     setShowComments((prevShowComments) => !prevShowComments);
   }
-
-  //fetch all comments for each post
-  useEffect(() => {
-    fetch(`http://localhost:3001/api/post/comment/${props.postId}`)
-      .then(function(res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then((getCommentData) => {
-        if (!getCommentData) {
-          return setCommentCount(0);
-        } else {
-          setCommentData(getCommentData.results);
-          setCommentCount(getCommentData.results.length);
-        }
-      });
-  }, []);
-  const commentElements = commentData.map((comment) => {
+  //getting array of comments for one postId
+  const commentPerPost = props.commentData.filter(
+    (comment) => comment.postId === props.postId
+  );
+  //rendering each comments in post
+  const commentElements = commentPerPost.map((comment) => {
     return (
       <Comments
         key={comment.id}
@@ -45,6 +36,11 @@ export default function Post(props) {
         commentUserId={comment.userId}
         timestamp={comment.created_at}
         content={comment.content}
+        postId={props.postId}
+        setCommentCount={setCommentCount}
+        commentCount={commentCount}
+        commentData={props.commentData}
+        setCommentData={props.setCommentData}
       />
     );
   });
@@ -65,7 +61,6 @@ export default function Post(props) {
         if (!getLikeData) {
           return setLikeCount(0);
         } else {
-          console.log(getLikeData.results);
           setLikeData(getLikeData.results);
           setLikeCount(getLikeData.results.length);
         }
@@ -123,12 +118,12 @@ export default function Post(props) {
     }
   }
   //function to open the modal windows on delete and modify on the Posts
-  function modalDelete() {
-    props.showModalDelete(true);
+  function modalDeletePost() {
+    setModalDelete(true);
     setShowMenu(false);
   }
-  function modalModify() {
-    props.showModalModify(true);
+  function modalModifyPost() {
+    setModalModify(true);
     setShowMenu(false);
   }
   return (
@@ -144,10 +139,10 @@ export default function Post(props) {
             <button onClick={handleClick}>+</button>
             {showMenu ? (
               <div className="post--collapsibleMenu--option">
-                <button id={props.postId} onClick={modalModify}>
+                <button id={props.postId} onClick={modalModifyPost}>
                   Modifier
                 </button>
-                <button id={props.postId} onClick={modalDelete}>
+                <button id={props.postId} onClick={modalDeletePost}>
                   Supprimer
                 </button>
               </div>
@@ -182,7 +177,27 @@ export default function Post(props) {
 
           {showComments ? <div>{commentElements}</div> : null}
 
-          <NewComment />
+          <NewComment
+            postId={props.postId}
+            userId={props.userId}
+            setCommentCount={setCommentCount}
+            commentCount={commentCount}
+            setCommentData={props.setCommentData}
+            commentData={props.commentData}
+            updateComment={props.updateComment}
+          />
+          {modalModify && (
+            <ModalModify
+              closeModalModify={setModalModify}
+              postId={props.postId}
+            />
+          )}
+          {modalDelete && (
+            <ModalDelete
+              closeModalDelete={setModalDelete}
+              postId={props.postId}
+            />
+          )}
         </div>
       </div>
     </section>
