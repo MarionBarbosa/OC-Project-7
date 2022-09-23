@@ -5,33 +5,50 @@ const fs = require("fs");
 //CREATING NEW POST
 exports.createPost = (req, res, next) => {
   //getting the body of the request
-  const postObject = JSON.parse(req.body.post);
-  //checking if the userId is the same to authorise new post, if not matching throw err
-  if (postObject.userId !== req.auth.userId) {
-    res.status(401).json({ message: "Access denied" });
-  } else {
-    const post = new Post({
-      ...postObject,
-      imageUrl: `${req.protocol}://${req.get("host")}/images/${
-        req.file.filename
-      }`,
-    });
 
-    //sending new post into database
-    db.query(
-      "INSERT INTO post SET ?",
-      [post.title, post.content, post.userId, post.imageUrl],
-      (error, results) => {
-        if (error) {
-          res.json({ error });
-        } else if (results == 0) {
-          return res.status(404).json({ error: "Post not created" });
-        } else {
-          res.status(201).json({ message: "post created" });
-        }
+  const postObject = JSON.parse(req.body.post);
+  console.log(postObject);
+  //checking if the userId is the same to authorise new post, if not matching throw err
+  // if (postObject.userId !== req.auth.userId) {
+  //   res.status(401).json({ message: "Access denied" });
+  // } else {
+  const post = {
+    ...postObject,
+    imageUrl: `${req.protocol}://${req.get("host")}/images/${
+      req.file.filename
+    }`,
+  };
+  console.log(post);
+  //sending new post into database
+  db.query(
+    "INSERT INTO post SET title=?, content=?, userId=?, imageUrl=?",
+    [post.title, post.content, post.userId, post.imageUrl],
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "Post not created" });
+      } else {
+        db.query(
+          "SELECT * FROM post WHERE id=?",
+          results.insertId,
+          (error, results) => {
+            if (error) {
+              res.json({ error });
+            } else if (results == 0) {
+              return res.status(404).json({ error: "post not found" });
+            } else {
+              console.log(results);
+              res.status(200).json({
+                results,
+              });
+            }
+          }
+        );
       }
-    );
-  }
+    }
+  );
+  //}
 };
 //GETTING ALL POSTS
 exports.getAllPosts = (req, res, next) => {
@@ -112,28 +129,31 @@ exports.modifyPost = (req, res, next) => {
 
 //DELETING POST
 exports.deletePost = (req, res, next) => {
-  const post = req.body;
-  db.query("SELECT * FROM post WHERE id=?", post.id, (error, results) => {
+  const postId = req.params.id;
+  console.log(postId);
+  db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
       return res.status(404).json({ error: "Post not found" });
-    } else if (post.userId !== req.auth.userId) {
-      return res.status(400).json({ message: "access denied" });
-    } else {
+    }
+    //else if (post.userId !== req.auth.userId) {
+    //   return res.status(400).json({ message: "access denied" });
+    // }
+    else {
       //deleting image
-      const filename = post.imageUrl.split("/images/")[1];
-      fs.unlink(`images/${filename}`, () => {
-        db.query("DELETE FROM post WHERE id =?", post.id, (error, results) => {
-          if (error) {
-            res.json({ error });
-          } else if (results == 0) {
-            return res.status(404).json({ error: "Post not deleted" });
-          } else {
-            res.status(200).json({ message: "post deleted " });
-          }
-        });
+      // const filename = post.imageUrl.split("/images/")[1];
+      // fs.unlink(`images/${filename}`, () => {
+      db.query("DELETE FROM post WHERE id =?", postId, (error, results) => {
+        if (error) {
+          res.json({ error });
+        } else if (results == 0) {
+          return res.status(404).json({ error: "Post not deleted" });
+        } else {
+          res.status(200).json({ message: "post deleted " });
+        }
       });
+      //});
     }
   });
 };
