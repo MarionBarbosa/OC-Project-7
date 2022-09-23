@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
-import ModalDelete from "../../components/ModalDelete";
-import ModalModify from "../../components/ModalModify";
+
 import Post from "../../components/Post";
 export default function Feed() {
-  const [modalDelete, setModalDelete] = useState(false);
-  const [modalModify, setModalModify] = useState(false);
-
   const [data, setData] = useState([]);
+  const [commentData, setCommentData] = useState([]);
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState();
+  //function to update the state getting all the comments afet adding a new comment so it is rendered on the page.
+  const updateComment = (newComment) => {
+    setCommentData((prevCommentData) => [...prevCommentData, newComment]);
+  };
   //getting all posts
   useEffect(() => {
     //setLoading(true);
@@ -36,6 +37,7 @@ export default function Feed() {
   // if (error || !Array.isArray(data)) {
   //   return <p>There was an error loading your data!</p>;
   // }
+  //rendering all post in the feed page
   const postElements = data.map((post) => {
     return (
       <Post
@@ -46,15 +48,27 @@ export default function Feed() {
         title={post.title}
         content={post.content}
         imageUrl={post.imageUrl}
-        showModalDelete={setModalDelete}
-        showModalModify={setModalModify}
+        setCommentData={setCommentData}
+        commentData={commentData}
+        updateComment={updateComment}
       />
     );
   });
+
+  //getting all comments for all posts
+  useEffect(() => {
+    fetch("http://localhost:3001/api/post/comment")
+      .then(function(res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((getCommentData) => {
+        setCommentData(getCommentData.results);
+      });
+  }, []);
   return (
     <>
-      {modalModify && <ModalModify closeModalModify={setModalModify} />}
-      {modalDelete && <ModalDelete closeModalDelete={setModalDelete} />}
       <Header />
       {postElements}
     </>
