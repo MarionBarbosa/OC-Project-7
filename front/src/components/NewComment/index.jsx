@@ -37,7 +37,8 @@ export default function NewComment(props) {
       })
       .then((comment) => {
         props.updateComment(comment.results[0]);
-        //setFormData({ commentContent: "" });
+        props.setCommentCount((prevCommentCount) => prevCommentCount + 1);
+        setFormData({ commentContent: "" });
       });
   }
 
