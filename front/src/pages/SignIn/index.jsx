@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
+import { UserContext } from "../../Context";
+
 export default function SignIn() {
   const passwordRef = useRef();
   const emailRef = useRef();
   let navigate = useNavigate();
   const [errorEmail, setErrorEmail] = useState(null);
-  const [loginData, setLoginData] = useState();
+  // const [loginData, setLoginData] = useState();
+  const { loginData, setLoginData } = useContext(UserContext);
+  console.log(loginData);
   function handleSubmit(event) {
     event.preventDefault();
+    //setLoginData({ user: 1, token: "ooubjnjpuoyiuf", isAdmin: false });
     const savedEmail = emailRef.current.value;
     const savedPassword = passwordRef.current.value;
     const savedData = {
@@ -35,6 +40,7 @@ export default function SignIn() {
       })
       .then((data) => {
         setLoginData(data);
+        console.log(data);
         console.log(loginData);
       })
       //redirect to feed page
