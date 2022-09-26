@@ -21,7 +21,7 @@ export default function createPost() {
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
       },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ form }),
     }).then(function(res) {
       if (res.ok) {
         return res.json();
