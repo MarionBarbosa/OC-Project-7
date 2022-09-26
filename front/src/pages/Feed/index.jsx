@@ -3,14 +3,16 @@ import Header from "../../components/Header";
 
 import Post from "../../components/Post";
 export default function Feed() {
-  const [data, setData] = useState([]);
+  const [postData, setPostData] = useState([]);
   const [commentData, setCommentData] = useState([]);
+
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState();
-  //function to update the state getting all the comments afet adding a new comment so it is rendered on the page.
+  //function to update the state getting all the comments after adding a new comment so it is rendered on the page.
   const updateComment = (newComment) => {
     setCommentData((prevCommentData) => [...prevCommentData, newComment]);
   };
+
   //getting all posts
   useEffect(() => {
     //setLoading(true);
@@ -20,8 +22,8 @@ export default function Feed() {
           return res.json();
         }
       })
-      .then((postData) => {
-        setData(postData.results);
+      .then((data) => {
+        setPostData(data.results);
       });
     // .catch(function(err) {
     //   setError(err);
@@ -32,16 +34,16 @@ export default function Feed() {
   }, []);
 
   // if (loading) {
-  //   return <p>Data is loading...</p>;
+  //   return <p>Data is= loading...</p>;
   // }
   // if (error || !Array.isArray(data)) {
   //   return <p>There was an error loading your data!</p>;
   // }
   //rendering all post in the feed page
-  const postElements = data.map((post) => {
+  const postElements = postData.map((post) => {
     return (
       <Post
-        key={post.id}
+        key={post.created_at}
         postId={post.id}
         userId={post.userId}
         timestamp={post.created_at}
@@ -51,6 +53,10 @@ export default function Feed() {
         setCommentData={setCommentData}
         commentData={commentData}
         updateComment={updateComment}
+        postData={postData}
+        setPostData={setPostData}
+        firstName={post.firstName}
+        lastName={post.lastName}
       />
     );
   });
