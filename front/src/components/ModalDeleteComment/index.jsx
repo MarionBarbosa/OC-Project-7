@@ -3,7 +3,8 @@ import React from "react";
 export default function ModalDeleteComment(props) {
   function handleClickDeleteComment(event) {
     event.preventDefault();
-    const commentId = event.currentTarget.id;
+    const commentId = +event.currentTarget.id;
+
     const urlDeleteComment = `http://localhost:3001/api/post/comment/${commentId}`;
     fetch(urlDeleteComment, {
       method: "DELETE",
@@ -15,10 +16,11 @@ export default function ModalDeleteComment(props) {
         }
       })
       .then(() => {
-        const updateCommentData = props.commentData.filter(
-          (comment) => comment.id !== commentId
+        props.setCommentData((prevCommentData) =>
+          prevCommentData.filter((comment) => comment.id !== commentId)
         );
-        props.setCommentData(updateCommentData);
+        console.log(props.commentData);
+        props.setCommentCount((prevCommentCount) => prevCommentCount - 1);
         props.closeModalDelete(false);
       });
   }
