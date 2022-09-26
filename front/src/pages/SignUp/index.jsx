@@ -4,6 +4,8 @@ import { useRef, useState } from "react";
 export default function SignUp() {
   const passwordRef = useRef();
   const emailRef = useRef();
+  const lastNameRef = useRef();
+  const firstNameRef = useRef();
   const [errorEmail, setErrorEmail] = useState(null);
   //const [errorPassword, setErrorPassword] = useState(null);
   //check email is valid
@@ -69,12 +71,16 @@ export default function SignUp() {
     event.preventDefault();
     const newEmail = emailRef.current.value;
     const newPassword = passwordRef.current.value;
-
+    const newLastName = lastNameRef.current.value;
+    const newFirstName = firstNameRef.current.value;
     //fetch: send data to API
     const urlSignUp = "http://localhost:3001/api/auth/signUp";
     const formData = {
       email: newEmail,
       password: newPassword,
+      lastName: newLastName,
+      firstName: newFirstName,
+      admin: false,
     };
     fetch(urlSignUp, {
       method: "POST",
@@ -88,6 +94,8 @@ export default function SignUp() {
     <section className="signIn">
       <h1>Inscription</h1>
       <form className="signIn__form">
+        <input type="text" placeholder="Nom" ref={lastNameRef} />
+        <input type="text" placeholder="Prénom" ref={firstNameRef} />
         <input
           type="email"
           placeholder="Email"
