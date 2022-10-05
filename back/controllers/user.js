@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const db = require("../mysql_config");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+
 //function to check a strong password was typed.
 function checkPasswordValidation(value) {
   const isWhitespace = /^(?=.*\s)/;
@@ -75,7 +76,6 @@ exports.login = (req, res) => {
   //finding email in database
   const email = req.body.email;
   db.query("SELECT * FROM user WHERE email=?", email, (error, results) => {
-    console.log(results);
     if (error) {
       res.json({ error });
     } else if (results == 0) {
@@ -87,10 +87,12 @@ exports.login = (req, res) => {
         .compare(req.body.password, password)
         .then((valid) => {
           if (!valid) {
-            res.status(401).json({ message: "wrong password" });
+            res.status(401).json({ error: "Wrong password" });
           } else {
             //issuing a token to allow access throughout website
+
             res.status(200).json({
+              auth: true,
               userId: results[0].id,
               token: jwt.sign(
                 { userId: results[0].id },
@@ -99,6 +101,7 @@ exports.login = (req, res) => {
                   expiresIn: "1h",
                 }
               ),
+              isAdmin: results[0].admin,
             });
           }
         })
