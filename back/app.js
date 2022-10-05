@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const db = require("./mysql_config");
 const userRoutes = require("./routes/user");
 const postRoutes = require("./routes/post");
 const likeRoutes = require("./routes/like");
