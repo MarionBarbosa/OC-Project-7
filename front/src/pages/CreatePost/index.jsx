@@ -1,51 +1,54 @@
 import React from "react";
-import { useState } from "react";
-export default function createPost() {
-  //function to upload images
-  function handleFileChange(e) {}
+import { useState, useRef } from "react";
+export default function CreatePost() {
   //getting all input data
-  const [imageUrl, setImageUrl] = useState("");
+  const formData = new FormData();
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+  const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const imageRef = useRef(null);
   function handleSubmitPost(event) {
     event.preventDefault();
-    console.log(title, content, imageUrl);
-    const form = {
-      title: title,
-      content: content,
-      userId: 7,
-      imageUrl: imageUrl,
-    };
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("userId", userId);
+    formData.append("image", image);
+    //sending the form to backend
     fetch("http://localhost:3001/api/post", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ form }),
-    }).then(function(res) {
+      body: formData,
+    }).then(function (res) {
       if (res.ok) {
-        return res.json();
+        //clearing all fields
+        setContent("");
+        setTitle("");
+        imageRef.current.value = null;
       }
     });
-    setContent("");
-    setTitle("");
   }
   return (
     <div>
-      <form>
+      <form encType="multipart/form-data">
         <input
           type="text"
-          placeholder="Title"
+          placeholder="Insérez un titre"
           value={title}
           onChange={(event) => setTitle(event.target.value)}
         />
         <input
           type="file"
-          onChange={(event) => setImageUrl(event.target.value.trim())}
+          name="image"
+          onChange={(event) => setImage(event.target.files[0])}
+          ref={imageRef}
         />
         <input
           type="text"
-          placeholder="Text"
+          placeholder="Ecrivez votre texte"
           value={content}
           onChange={(event) => setContent(event.target.value)}
         />
@@ -54,4 +57,3 @@ export default function createPost() {
     </div>
   );
 }
-//create function to POST form
