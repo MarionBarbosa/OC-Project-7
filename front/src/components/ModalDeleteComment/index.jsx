@@ -1,6 +1,7 @@
 import React from "react";
 
 export default function ModalDeleteComment(props) {
+  const token = localStorage.getItem("token");
   function handleClickDeleteComment(event) {
     event.preventDefault();
     const commentId = +event.currentTarget.id;
@@ -8,9 +9,12 @@ export default function ModalDeleteComment(props) {
     const urlDeleteComment = `http://localhost:3001/api/post/comment/${commentId}`;
     fetch(urlDeleteComment, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json;charset=UTF-8" },
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
+      },
     })
-      .then(function(res) {
+      .then(function (res) {
         if (!res.ok) {
           return alert({ message: "not working" });
         }
