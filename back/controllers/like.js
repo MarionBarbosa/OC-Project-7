@@ -14,6 +14,8 @@ exports.createLike = (req, res, next) => {
     (error, results) => {
       if (error) {
         res.json({ error });
+      } else if (results != 0 && like === 1) {
+        return res.status(400).json({ message: "post already liked" });
       } else if (results == 0 && like === 1) {
         db.query(
           `INSERT INTO liked SET postId=?, userId=?`,
@@ -26,8 +28,6 @@ exports.createLike = (req, res, next) => {
             }
           }
         );
-      } else if (results != 0 && like === 1) {
-        return res.status(400).json({ message: "post already liked" });
       } else if (results != 0 && like === -1) {
         db.query(
           "DELETE FROM liked WHERE postId=? AND userId=?",
