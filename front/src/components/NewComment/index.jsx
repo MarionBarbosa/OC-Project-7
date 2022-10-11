@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-//import { useState, useEffect } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 
 export default function NewComment(props) {
@@ -16,23 +15,23 @@ export default function NewComment(props) {
   }
   const urlComment = "http://localhost:3001/api/post/comment";
 
-  const userId = props.userId;
+  const userId = +localStorage.getItem("userId");
   function handleClick(event) {
     event.preventDefault();
     const postId = props.postId;
     const content = formData.commentContent;
+    const token = localStorage.getItem("token");
     fetch(urlComment, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json;charset=UTF-8",
+        "Content-type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({ userId, postId, content }),
     })
-      .then(function(res) {
+      .then(function (res) {
         if (res.ok) {
           return res.json();
-        } else {
-          return console.log("not working");
         }
       })
       .then((comment) => {
@@ -42,9 +41,8 @@ export default function NewComment(props) {
       });
   }
 
-  //fetch("http://localhost:3001/api/post/comment");
   return (
-    <>
+    <div className="newComment">
       <input
         type="text"
         onChange={handleChange}
@@ -54,8 +52,12 @@ export default function NewComment(props) {
         value={formData.commentContent}
       />
       <button>
-        <FaArrowCircleRight onClick={handleClick} id={props.postId} />
+        <FaArrowCircleRight
+          className="newComment--button--icon"
+          onClick={handleClick}
+          id={props.postId}
+        />
       </button>
-    </>
+    </div>
   );
 }
