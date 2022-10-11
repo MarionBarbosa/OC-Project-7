@@ -1,5 +1,7 @@
 const db = require("../mysql_config");
+let isAdmin = 0;
 
+// *******************CREATE COMMENT************************
 exports.createComment = (req, res, next) => {
   //getting all data for new post from frontend
   const commentObject = req.body;
@@ -29,7 +31,6 @@ exports.createComment = (req, res, next) => {
               } else if (results == 0) {
                 return res.status(404).json({ error: "Comment not found" });
               } else {
-                console.log(results);
                 res.status(200).json({
                   results,
                 });
@@ -66,17 +67,33 @@ exports.getAllComment = (req, res, next) => {
     }
   });
 };
+//*********************************MODIFY COMMENT*********************************
 exports.modifyComment = (req, res, next) => {
   const comment = req.body;
   const commentId = req.params.commentId;
-  console.log(req.params);
+
+  db.query(
+    "SELECT * FROM user WHERE id=?",
+    req.auth.userId,
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "user not found" });
+      } else if (results[0].admin === 1) {
+        isAdmin = 1;
+      } else {
+        isAdmin = 0;
+      }
+    }
+  );
   db.query("SELECT * FROM comment WHERE id=?", commentId, (error, results) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
       return res.status(404).json({ error: "Comment not found" });
     } else {
-      if (results[0].userId !== req.auth.userId) {
+      if (isAdmin !== 1 && results[0].userId !== req.auth.userId) {
         return res.status(400).json({ message: "access denied" });
       } else {
         db.query(
@@ -96,10 +113,25 @@ exports.modifyComment = (req, res, next) => {
     }
   });
 };
-
+//*********************************DELETE COMMENT **************************************
 exports.deleteComment = (req, res, next) => {
   const commentId = req.params.commentId;
   //searching for comment in database
+  db.query(
+    "SELECT * FROM user WHERE id=?",
+    req.auth.userId,
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "user not found" });
+      } else if (results[0].admin === 1) {
+        isAdmin = 1;
+      } else {
+        isAdmin = 0;
+      }
+    }
+  );
   db.query("SELECT * FROM comment WHERE id=?", commentId, (error, results) => {
     if (error) {
       res.json({ error });
@@ -107,10 +139,10 @@ exports.deleteComment = (req, res, next) => {
       return res.status(404).json({ error: "Comment not found" });
     } else {
       //checking the user is authorized
-      if (results[0].userId !== req.auth.userId) {
+      if (isAdmin !== 1 && results[0].userId !== req.auth.userId) {
         return res.status(400).json({ message: "access denied" });
       } else {
-        //if comment is in database and user authorized it now can be deleted
+        //if comment is in database and user is authorized then it now can be deleted
         db.query(
           "DELETE FROM comment WHERE id =?",
           commentId,

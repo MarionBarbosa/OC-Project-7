@@ -1,10 +1,12 @@
 const db = require("../mysql_config");
 const fs = require("fs");
 
-//CREATING NEW POST
+let isAdmin = 0;
+//***************************CREATING NEW POST*********************************
 exports.createPost = (req, res) => {
   //getting the body of the request
   const postObject = req.body;
+
   //checking if the userId is the same to authorise new post, if not matching throw err
   if (+postObject.userId !== req.auth.userId) {
     res.status(401).json({ message: "Access denied" });
@@ -74,7 +76,7 @@ exports.createPost = (req, res) => {
     );
   }
 };
-//GETTING ALL POSTS
+//********************************GETTING ALL POSTS************************************
 exports.getAllPosts = (req, res, next) => {
   db.query("SELECT * FROM post", (error, results) => {
     if (error) {
@@ -87,21 +89,37 @@ exports.getAllPosts = (req, res, next) => {
   });
 };
 
-//MODIFYING POST
+//****************************MODIFYING POST********************************
 exports.modifyPost = (req, res, next) => {
   const postId = req.params.id;
   const postObject = req.body;
+  //checking if the logged user has admin rights
+  db.query(
+    "SELECT * FROM user WHERE id=?",
+    req.auth.userId,
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "user not found" });
+      } else if (results[0].admin === 1) {
+        isAdmin = 1;
+      } else {
+        isAdmin = 0;
+      }
+    }
+  );
   //Query to database to search for the post to be modified
   db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
       return res.status(404).json({ error: "Post not found" });
-    } else if (results[0].userId !== req.auth.userId) {
+    } else if (isAdmin !== 1 && results[0].userId !== req.auth.userId) {
       return res.status(400).json({ message: "access denied" });
     } else {
       //getting the old image name in case it needs deleting
-      const oldFilename = results[0].imageUrl.split("/images/")[1];
+      // const oldFilename = results[0].imageUrl.split("/images/")[1];
       if (req.file) {
         const postImage = {
           ...postObject,
@@ -120,15 +138,28 @@ exports.modifyPost = (req, res, next) => {
               return res.status(404).json({ error: "Post not modified" });
             } else {
               //deleting previous image
-              fs.unlink(`images/${oldFilename}`, (err) => {
-                message: "Image not deleted";
-              });
-              console.log(results);
-              res.status(200).json({ results });
+              // fs.unlink(`images/${oldFilename}`, (err) => {
+              //   message: "Image not deleted";
+              // });
+              db.query(
+                "SELECT * FROM post WHERE id=?",
+                postId,
+                (error, results) => {
+                  if (error) {
+                    res.json({ error });
+                  } else if (results == 0) {
+                    return res.status(404).json({ error: "Post not found" });
+                  } else {
+                    res.status(200).json({
+                      results,
+                    });
+                  }
+                }
+              );
             }
           }
         );
-      } else {
+      } else if (!req.file) {
         const postObject = req.body;
         db.query(
           `UPDATE post SET title=?, content=? WHERE id=?`,
@@ -139,7 +170,19 @@ exports.modifyPost = (req, res, next) => {
             } else if (results == 0) {
               return res.status(404).json({ error: "Post not modified" });
             } else {
-              res.status(200).json({ results });
+              db.query(
+                "SELECT * FROM post WHERE id=?",
+                postId,
+                (error, results) => {
+                  if (error) {
+                    res.json({ error });
+                  } else if (results == 0) {
+                    return res.status(404).json({ error: "Post not found" });
+                  } else {
+                    res.status(200).json({ results });
+                  }
+                }
+              );
             }
           }
         );
@@ -148,56 +191,93 @@ exports.modifyPost = (req, res, next) => {
   });
 };
 
-//DELETING POST
+//****************************DELETING POST***********************************8
+//delete all comment from the post
 exports.deletePost = (req, res, next) => {
   const postId = req.params.id;
-
+  db.query(
+    "SELECT * FROM user WHERE id=?",
+    req.auth.userId,
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "user not found" });
+      } else if (results[0].admin === 1) {
+        isAdmin = 1;
+      } else {
+        isAdmin = 0;
+      }
+    }
+  );
   db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
     if (error) {
       res.json({ error });
     } else if (results == 0) {
       return res.status(404).json({ error: "Post not found" });
-    } else if (results[0].userId !== req.auth.userId) {
+    } else if (isAdmin !== 1 && results[0].userId !== req.auth.userId) {
       return res.status(400).json({ message: "access denied" });
     } else {
-      //deleting image
-      //const filename = results.imageUrl.split("/images/")[1];
-      //fs.unlink(`images/${filename}`, () => {
-      db.query("DELETE FROM post WHERE id =?", postId, (error, results) => {
+      db.query(
+        "SELECT * FROM comment WHERE postId=?",
+        postId,
+        (error, results) => {
+          if (error) {
+            res.json({ error });
+          } else {
+            db.query(
+              "DELETE FROM comment WHERE postId=?",
+              postId,
+              (error, results) => {
+                if (error) {
+                  res.json({ error });
+                }
+              }
+            );
+          }
+        }
+      );
+      //delete all likes from the post
+      db.query(
+        "SELECT * FROM liked WHERE postId=?",
+        postId,
+        (error, results) => {
+          if (error) {
+            res.json({ error });
+          } else {
+            db.query(
+              "DELETE FROM liked WHERE postId=?",
+              postId,
+              (error, results) => {
+                if (error) {
+                  res.json({ error });
+                }
+              }
+            );
+          }
+        }
+      );
+      //deleting image and post
+      // const filename = results.imageUrl.split("/images/")[1];
+      // fs.unlink(`images/${filename}`, () => {
+      db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
         if (error) {
           res.json({ error });
         } else if (results == 0) {
-          return res.status(404).json({ error: "Post not deleted" });
+          return res.status(404).json({ error: "Post not found" });
         } else {
-          db.query(
-            "SELECT * FROM comment WHERE postId=?",
-            postId,
-            (error, results) => {
-              if (error) {
-                res.json({ error });
-              } else if (results == 0) {
-                return res.status(404).json({ error: "Comment not found" });
-              } else {
-                db.query(
-                  "DELETE FROM comment WHERE postId=?",
-                  postId,
-                  (error, results) => {
-                    if (error) {
-                      res.json({ error });
-                    } else {
-                      res
-                        .status(200)
-                        .json({ message: "Post and Comment deleted " });
-                    }
-                  }
-                );
-              }
+          db.query("DELETE FROM post WHERE id =?", postId, (error, results) => {
+            if (error) {
+              res.json({ error });
+            } else if (results == 0) {
+              return res.status(404).json({ error: "Post not deleted" });
+            } else {
+              res.status(200).json({ message: "post deleted" });
             }
-          );
+          });
         }
+        // });
       });
-
-      //});
     }
   });
 };
