@@ -3,13 +3,27 @@ import React from "react";
 export default function ModalDelete(props) {
   function handleClickDelete(event) {
     event.preventDefault();
-    console.log(event.currentTarget.id);
-    const postId = event.currentTarget.id;
-    const urlDeletePost = `http://localhost:3001/api/post/${postId}`;
-    fetch(urlDeletePost, {
+    const token = localStorage.getItem("token");
+    const postId = +event.currentTarget.id;
+
+    fetch(`http://localhost:3001/api/post/${postId}`, {
       method: "DELETE",
-      headers: { "Content-Type": "application/json;charset=UTF-8" },
-    });
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then(() => {
+        props.setPostData((prevPostData) =>
+          prevPostData.filter((post) => post.id !== postId)
+        );
+        props.closeModalDelete(false);
+      })
+      .catch((error) => console.error("error:", error));
   }
   return (
     <div className="modal--background">
