@@ -1,7 +1,9 @@
 import React from "react";
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 export default function CreatePost() {
   //getting all input data
+  let navigate = useNavigate();
   const formData = new FormData();
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
@@ -27,6 +29,7 @@ export default function CreatePost() {
         //clearing all fields
         setContent("");
         setTitle("");
+        navigate("/", { replace: true });
         imageRef.current.value = null;
       }
     });
