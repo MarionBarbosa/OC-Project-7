@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function ModalModify(props) {
   const token = localStorage.getItem("token");
 
-  const [image, setImage] = useState(props.postImageUrl);
+  const [image, setImage] = useState(props.postImage);
   const [title, setTitle] = useState(props.postTitle);
   const [content, setContent] = useState(props.postContent);
   function handleClick(event) {
@@ -20,14 +20,18 @@ export default function ModalModify(props) {
         Authorization: `Bearer ${token}`,
       },
       body: formData,
-    }).then(function (res) {
-      if (res.ok) {
-        //clearing all fields
-        setContent("");
-        setTitle("");
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((post) => {
+        props.setPostTitle(post.results[0].title);
+        props.setPostContent(post.results[0].content);
+        props.setPostImage(post.results[0].imageUrl);
         props.closeModalModify(false);
-      }
-    });
+      });
   }
 
   return (
