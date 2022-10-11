@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Header from "../../components/Header";
 
 import Post from "../../components/Post";
+
 export default function Feed() {
   const [postData, setPostData] = useState([]);
   const [commentData, setCommentData] = useState([]);
@@ -13,16 +14,24 @@ export default function Feed() {
     setCommentData((prevCommentData) => [...prevCommentData, newComment]);
   };
 
+  const token = localStorage.getItem("token");
   //getting all posts
   useEffect(() => {
     //setLoading(true);
-    fetch("http://localhost:3001/api/post")
-      .then(function(res) {
+    fetch("http://localhost:3001/api/post", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
+      },
+    })
+      .then(function (res) {
         if (res.ok) {
           return res.json();
         }
       })
       .then((data) => {
+        console.log(data);
         setPostData(data.results);
       });
     // .catch(function(err) {
@@ -45,7 +54,7 @@ export default function Feed() {
       <Post
         key={post.created_at}
         postId={post.id}
-        userId={post.userId}
+        postUserId={post.userId}
         timestamp={post.created_at}
         title={post.title}
         content={post.content}
@@ -63,8 +72,14 @@ export default function Feed() {
 
   //getting all comments for all posts
   useEffect(() => {
-    fetch("http://localhost:3001/api/post/comment")
-      .then(function(res) {
+    fetch("http://localhost:3001/api/post/comment", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
+      },
+    })
+      .then(function (res) {
         if (res.ok) {
           return res.json();
         }
@@ -76,7 +91,7 @@ export default function Feed() {
   return (
     <>
       <Header />
-      {postElements}
+      <div className="feed">{postElements}</div>
     </>
   );
 }
