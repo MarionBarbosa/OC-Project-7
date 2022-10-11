@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function ModalModifyComment(props) {
   //filling the input with the saved comment to be modified
   const [formData, setFormData] = useState({ commentContent: props.content });
-
+  const token = localStorage.getItem("token");
   function handleChange(event) {
     setFormData((prevFormData) => {
       return {
@@ -15,7 +15,6 @@ export default function ModalModifyComment(props) {
   //when clicking on button confirmation
   function handleClick(event) {
     event.preventDefault();
-    const userId = props.userId;
     const commentId = event.currentTarget.id;
     const urlCommentId = `http://localhost:3001/api/post/comment/${commentId}`;
     const content = formData.commentContent;
@@ -24,9 +23,15 @@ export default function ModalModifyComment(props) {
       method: "PUT",
       headers: {
         "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ userId, content }),
+      body: JSON.stringify({ content }),
     })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
       //changing state for comment content with new content
       .then(() => props.newContent(content))
       //closing the modal
