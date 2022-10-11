@@ -5,7 +5,8 @@ import ModalDeleteComment from "../ModalDeleteComment";
 import ModalModifyComment from "../ModalModifyComment";
 export default function Comments(props) {
   const commentUserId = props.commentUserId;
-  const loggedUserId = 1;
+  const loggedUserId = +localStorage.getItem("userId");
+  const isAdmin = +localStorage.getItem("isAdmin");
   const [modalDelete, setModalDelete] = useState(false);
   const [modalModify, setModalModify] = useState(false);
   const [commentContent, setCommentContent] = useState(props.content);
@@ -19,14 +20,14 @@ export default function Comments(props) {
     <div className="post--comment">
       <div>
         <div className="comment--user">
-          <p>NAME</p>
+          <p className="comment--user--name">NAME</p>
           <p>{props.timestamp}</p>
         </div>
         <div className="comment--content">
           <p>{commentContent}</p>
         </div>
       </div>
-      {commentUserId === loggedUserId ? (
+      {isAdmin === 1 || commentUserId === loggedUserId ? (
         <div className="comment--options">
           <button id={props.commentId} onClick={modalModifyComment}>
             Modifier
@@ -60,16 +61,3 @@ export default function Comments(props) {
     </div>
   );
 }
-// function handleClickModify(event) {
-//   event.preventDefault();
-//   const commentId = 16;
-//   const content = formData.commentContent;
-//   console.log(content);
-//   fetch(urlCommentId, {
-//     method: "PUT",
-//     headers: {
-//       "Content-Type": "application/json;charset=UTF-8",
-//     },
-//     body: JSON.stringify({ commentId, content }),
-//   });
-// }
