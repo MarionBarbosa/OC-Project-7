@@ -12,8 +12,8 @@ exports.createPost = (req, res) => {
     res.status(401).json({ message: "Access denied" });
   } else if (!req.file) {
     db.query(
-      "INSERT INTO post SET title=?, content=?, userId=?",
-      [postObject.title, postObject.content, postObject.userId],
+      "INSERT INTO post SET content=?, userId=?",
+      [postObject.content, postObject.userId],
       (error, results) => {
         if (error) {
           res.json({ error });
@@ -48,8 +48,8 @@ exports.createPost = (req, res) => {
 
     //sending new post into database
     db.query(
-      "INSERT INTO post SET title=?, content=?, userId=?, imageUrl=?",
-      [post.title, post.content, post.userId, post.imageUrl],
+      "INSERT INTO post SET content=?, userId=?, imageUrl=?",
+      [post.content, post.userId, post.imageUrl],
       (error, results) => {
         if (error) {
           res.json({ error });
@@ -129,8 +129,8 @@ exports.modifyPost = (req, res, next) => {
         };
 
         db.query(
-          `UPDATE post SET title=?, content=?, imageUrl=? WHERE id=?`,
-          [postImage.title, postImage.content, postImage.imageUrl, postId],
+          `UPDATE post SET content=?, imageUrl=? WHERE id=?`,
+          [postImage.content, postImage.imageUrl, postId],
           (error, results) => {
             if (error) {
               res.json({ error });
@@ -162,8 +162,8 @@ exports.modifyPost = (req, res, next) => {
       } else if (!req.file) {
         const postObject = req.body;
         db.query(
-          `UPDATE post SET title=?, content=? WHERE id=?`,
-          [postObject.title, postObject.content, postId],
+          `UPDATE post SET content=? WHERE id=?`,
+          [postObject.content, postId],
           (error, results) => {
             if (error) {
               res.json({ error });
