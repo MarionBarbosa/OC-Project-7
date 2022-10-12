@@ -44,13 +44,20 @@ exports.signup = (req, res) => {
     const password = req.body.password;
     const firstName = req.body.firstName;
     const lastName = req.body.lastName;
+    const admin = req.body.admin;
     bcrypt
       .hash(password, 10)
       .then((hash) => {
-        const user = new User(firstName, lastName, email, hash);
+        const user = new User(firstName, lastName, email, hash, admin);
         db.query(
-          `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?`,
-          [user.firstName, user.lastName, user.email, user.password],
+          `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?, admin=?`,
+          [
+            user.firstName,
+            user.lastName,
+            user.email,
+            user.password,
+            user.admin,
+          ],
           (error, results) => {
             if (error) {
               res.json({ error });
