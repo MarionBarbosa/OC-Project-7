@@ -39,37 +39,57 @@ function checkPasswordValidation(value) {
 
 exports.signup = (req, res) => {
   //checking if the password is strong, if so password goes through Bcrypt
-  // if (checkPasswordValidation(req.body.password) == null)
-  const email = req.body.email;
-  const password = req.body.password;
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  bcrypt
-    .hash(password, 10)
-    .then((hash) => {
-      const user = new User(firstName, lastName, email, hash);
-      db.query(
-        `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?`,
-        [user.firstName, user.lastName, user.email, user.password],
-        (error, results) => {
-          if (error) {
-            res.json({ error });
-          } else {
-            res.status(200).json({
-              message: "user created",
-            });
+  if (checkPasswordValidation(req.body.password) == null) {
+    const email = req.body.email;
+    const password = req.body.password;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
+    bcrypt
+      .hash(password, 10)
+      .then((hash) => {
+        const user = new User(firstName, lastName, email, hash);
+        db.query(
+          `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?`,
+          [user.firstName, user.lastName, user.email, user.password],
+          (error, results) => {
+            if (error) {
+              res.json({ error });
+            } else {
+              db.query(
+                "SELECT * FROM user WHERE id=?",
+                results.insertId,
+                (error, results) => {
+                  if (error) {
+                    res.json({ error });
+                  } else if (results == 0) {
+                    return res.status(404).json({ error: "user not found" });
+                  } else {
+                    res.status(200).json({
+                      auth: true,
+                      userId: results[0].id,
+                      token: jwt.sign(
+                        { userId: results[0].id },
+                        process.env.KEY_TOKEN,
+                        {
+                          expiresIn: "1h",
+                        }
+                      ),
+                      isAdmin: results[0].admin,
+                    });
+                  }
+                }
+              );
+            }
           }
-        }
-      );
-    })
-    .catch((error) => res.status(500).json({ error }));
-  //}
-  //else {
-  //   return res.status(401).json({
-  //     message:
-  //       "Le mot de passe doit contenir minimum 10 caratères, dont 1 majuscule, 1 chiffre, 1 symbole et sans espaces",
-  //   });
-  // }
+        );
+      })
+      .catch((error) => res.status(500).json({ error }));
+  } else {
+    return res.status(401).json({
+      message:
+        "Le mot de passe doit contenir minimum 10 caratères, dont 1 majuscule, 1 chiffre, 1 symbole et sans espaces",
+    });
+  }
 };
 
 exports.login = (req, res) => {
