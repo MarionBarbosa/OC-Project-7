@@ -14,7 +14,7 @@ export default function Header() {
   return (
     <header>
       <div className="header--logo">
-        <Link to="/home">
+        <Link to="/" onClick={handleLogOut}>
           <img src={Logo} alt="logo" className="header--logo--image" />
         </Link>
       </div>
@@ -24,7 +24,7 @@ export default function Header() {
         </Link>
       </div>
       <section>
-        <Link to="/signIn" className="link" onClick={handleLogOut}>
+        <Link to="/" className="link" onClick={handleLogOut}>
           Deconnexion
         </Link>
       </section>

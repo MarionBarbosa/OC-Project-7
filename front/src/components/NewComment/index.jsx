@@ -4,7 +4,10 @@ import { FaArrowCircleRight } from "react-icons/fa";
 
 export default function NewComment(props) {
   const [formData, setFormData] = useState({ commentContent: "" });
-
+  const [error, setError] = useState(null);
+  function handleError() {
+    setError("");
+  }
   function handleChange(event) {
     setFormData((prevFormData) => {
       return {
@@ -31,14 +34,19 @@ export default function NewComment(props) {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          return res
+            .json()
+            .then((comment) => {
+              props.updateComment(comment.results[0]);
+              props.setCommentCount((prevCommentCount) => prevCommentCount + 1);
+              setFormData({ commentContent: "" });
+            })
+            .catch((error) => console.error("error:", error));
+        } else {
+          setError("Champ vide");
         }
       })
-      .then((comment) => {
-        props.updateComment(comment.results[0]);
-        props.setCommentCount((prevCommentCount) => prevCommentCount + 1);
-        setFormData({ commentContent: "" });
-      });
+      .catch((error) => console.error("error", error));
   }
 
   return (
@@ -46,18 +54,20 @@ export default function NewComment(props) {
       <input
         type="text"
         onChange={handleChange}
+        onClick={handleError}
         placeholder="Ecrivez un commentaire"
         className="post--newComments"
         name="commentContent"
         value={formData.commentContent}
       />
-      <button>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <div>
         <FaArrowCircleRight
           className="newComment--button--icon"
           onClick={handleClick}
           id={props.postId}
         />
-      </button>
+      </div>
     </div>
   );
 }

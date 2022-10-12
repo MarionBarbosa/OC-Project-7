@@ -32,24 +32,26 @@ export default function SignIn() {
       body: JSON.stringify(formSignin),
     })
       .then(function (res) {
-        console.log(res);
         if (res.ok) {
-          return res.json();
+          return res
+            .json()
+            .then((data) => {
+              if (!data) {
+                setIsLoggedIn(false);
+              } else if (data.auth) {
+                setIsLoggedIn(true);
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("isAdmin", data.isAdmin);
+                navigate("/Feed", { replace: true });
+              }
+            })
+            .catch((error) => console.error("error:", error));
         } else {
           setError("Mot de passe ou utilisateur incorrects");
         }
       })
-      .then((data) => {
-        if (!data) {
-          setIsLoggedIn(false);
-        } else if (data.auth) {
-          setIsLoggedIn(true);
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userId", data.userId);
-          localStorage.setItem("isAdmin", data.isAdmin);
-          navigate("/", { replace: true });
-        }
-      });
+      .catch((error) => console.error("error:", error));
   }
   return (
     <section className="signIn">

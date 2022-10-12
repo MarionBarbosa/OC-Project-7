@@ -24,16 +24,14 @@ export default function Feed() {
         "Content-Type": "application/json;charset=UTF-8",
         authorization: `Bearer ${token}`,
       },
-    })
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        console.log(data);
-        setPostData(data.results);
-      });
+    }).then(function (res) {
+      if (res.ok) {
+        return res.json().then((data) => {
+          setPostData(data.results);
+        });
+      }
+    });
+
     // .catch(function(err) {
     //   setError(err);
     // })
@@ -81,12 +79,15 @@ export default function Feed() {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          return res
+            .json()
+            .then((getCommentData) => {
+              setCommentData(getCommentData.results);
+            })
+            .catch((error) => console.error("error:", error));
         }
       })
-      .then((getCommentData) => {
-        setCommentData(getCommentData.results);
-      });
+      .catch((error) => console.error("error:", error));
   }, []);
   return (
     <>

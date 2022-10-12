@@ -18,8 +18,8 @@ export default function App() {
     <Router>
       <UserContext.Provider value={{ isLogged, setIsLoggedIn }}>
         <Routes>
-          <Route path="/home" element={<Home />} />
-          <Route path="/" element={<Feed />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/Feed" element={<Feed />} />
           <Route exact path="/signIn" element={<SignIn />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/createPost" element={<CreatePost />} />

@@ -14,15 +14,20 @@ export default function ModalDelete(props) {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          return res
+            .json()
+            .then(() => {
+              props.setPostData((prevPostData) =>
+                prevPostData.filter((post) => post.id !== postId)
+              );
+              props.closeModalDelete(false);
+            })
+            .catch((error) => console.error("error:", error));
+        } else {
+          alert("Un problème est survenu, veuillez essayer à nouveau");
         }
       })
-      .then(() => {
-        props.setPostData((prevPostData) =>
-          prevPostData.filter((post) => post.id !== postId)
-        );
-        props.closeModalDelete(false);
-      })
+
       .catch((error) => console.error("error:", error));
   }
   return (

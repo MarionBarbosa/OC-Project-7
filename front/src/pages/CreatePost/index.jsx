@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaUserCircle } from "react-icons/fa";
 export default function CreatePost() {
   //getting all input data
   let navigate = useNavigate();
@@ -8,12 +9,12 @@ export default function CreatePost() {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const [image, setImage] = useState("");
-  const [title, setTitle] = useState("");
+
   const [content, setContent] = useState("");
   const imageRef = useRef(null);
   function handleSubmitPost(event) {
     event.preventDefault();
-    formData.append("title", title);
+
     formData.append("content", content);
     formData.append("userId", userId);
     formData.append("image", image);
@@ -24,39 +25,56 @@ export default function CreatePost() {
         Authorization: `Bearer ${token}`,
       },
       body: formData,
-    }).then(function (res) {
-      if (res.ok) {
-        //clearing all fields
-        setContent("");
-        setTitle("");
-        navigate("/", { replace: true });
-        imageRef.current.value = null;
-      }
-    });
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res
+            .json()
+            .then(() => {
+              //clearing all fields
+              setContent("");
+              imageRef.current.value = null;
+              navigate("/", { replace: true });
+            })
+            .catch((error) => console.error("error:", error));
+        }
+      })
+      .catch((error) => console.error("error:", error));
   }
   return (
     <div>
-      <form encType="multipart/form-data">
-        <input
-          type="text"
-          placeholder="Insérez un titre"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-        <input
-          type="file"
-          name="image"
-          onChange={(event) => setImage(event.target.files[0])}
-          ref={imageRef}
-        />
-        <input
-          type="text"
-          placeholder="Ecrivez votre texte"
-          value={content}
-          onChange={(event) => setContent(event.target.value)}
-        />
-        <button onClick={handleSubmitPost}>Publier</button>
-      </form>
+      <div className="createPost--container">
+        <h1 className="createPost--header">Créer une publication</h1>
+        <div className="post--profile--details">
+          <div className="post--profile--picture">
+            <FaUserCircle />
+          </div>
+          <div className="post--profile--name">NAME</div>
+        </div>
+        <form className="createPost" encType="multipart/form-data">
+          <textarea
+            className="createPost--content"
+            type="text"
+            placeholder="Que souhaitez-vous partager aujourd'hui?"
+            value={content}
+            onChange={(event) => setContent(event.target.value)}
+          />
+          <input
+            className="createPost--image"
+            type="file"
+            name="image"
+            onChange={(event) => setImage(event.target.files[0])}
+            ref={imageRef}
+          />
+          <button
+            className="createPost--button"
+            disabled={!content}
+            onClick={handleSubmitPost}
+          >
+            Publier
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

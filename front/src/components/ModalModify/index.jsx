@@ -2,15 +2,17 @@ import React from "react";
 import { useState } from "react";
 export default function ModalModify(props) {
   const token = localStorage.getItem("token");
-
+  const [error, setError] = useState(null);
   const [image, setImage] = useState(props.postImage);
-  const [title, setTitle] = useState(props.postTitle);
   const [content, setContent] = useState(props.postContent);
+  function handleError() {
+    setError("");
+  }
   function handleClick(event) {
     event.preventDefault();
     const postId = event.currentTarget.id;
     const formData = new FormData();
-    formData.append("title", title);
+    console.log(content);
     formData.append("content", content);
     formData.append("image", image);
     //sending the form to backend
@@ -23,30 +25,29 @@ export default function ModalModify(props) {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          console.log(res);
+          return res
+            .json()
+            .then((post) => {
+              console.log(post);
+              props.setPostContent(post.results[0].content);
+              props.setPostImage(post.results[0].imageUrl);
+              props.closeModalModify(false);
+            })
+            .catch((error) => console.error("error:", error));
+        } else {
+          setError("Champ vide");
         }
       })
-      .then((post) => {
-        props.setPostTitle(post.results[0].title);
-        props.setPostContent(post.results[0].content);
-        props.setPostImage(post.results[0].imageUrl);
-        props.closeModalModify(false);
-      });
+
+      .catch((error) => console.error("error", error));
   }
 
   return (
     <div className="modal--background">
-      <div>
+      <div className="modal--container--modify">
         <h2>Modifier la publication</h2>
         <form encType="multipart/form-data">
-          <input
-            type="text"
-            className="post--title"
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Ajouter un titre"
-            name="postTitle"
-            defaultValue={props.postTitle}
-          />
           <div className="post--image--container">
             <img
               name="postImageUrl"
@@ -67,7 +68,9 @@ export default function ModalModify(props) {
             placeholder="Ajouter du texte"
             name="postContent"
             defaultValue={props.postContent}
+            onClick={handleError}
           />
+          {error && <p style={{ color: "red" }}>{error}</p>}
           <button onClick={() => props.closeModalModify(false)}>Annuler</button>
           <button onClick={handleClick} id={props.postId}>
             Confirmer

@@ -3,7 +3,11 @@ import { useState } from "react";
 export default function ModalModifyComment(props) {
   //filling the input with the saved comment to be modified
   const [formData, setFormData] = useState({ commentContent: props.content });
+  const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
+  function handleError() {
+    setError("");
+  }
   function handleChange(event) {
     setFormData((prevFormData) => {
       return {
@@ -29,13 +33,20 @@ export default function ModalModifyComment(props) {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          return (
+            res
+              .json()
+              //changing state for comment content with new content
+              .then(() => props.newContent(content))
+              //closing the modal
+              .then(() => props.closeModalModify(false))
+              .catch((error) => console.error("error:", error))
+          );
+        } else {
+          setError("champ vide");
         }
       })
-      //changing state for comment content with new content
-      .then(() => props.newContent(content))
-      //closing the modal
-      .then(() => props.closeModalModify(false));
+      .catch((error) => console.error("error:", error));
   }
   return (
     <div className="modal--background">
@@ -44,11 +55,13 @@ export default function ModalModifyComment(props) {
         <input
           type="text"
           onChange={handleChange}
+          onClick={handleError}
           placeholder="Ecrivez un commentaire"
           className="post--newComments"
           name="commentContent"
           value={formData.commentContent}
         />
+        {error && <p style={{ color: "red" }}>{error}</p>}
         <button onClick={() => props.closeModalModify(false)}>Annuler</button>
         <button onClick={handleClick} id={props.commentId}>
           Confirmer

@@ -1,6 +1,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { FaRegThumbsUp, FaRegCommentAlt, FaUserCircle } from "react-icons/fa";
+import {
+  FaRegThumbsUp,
+  FaThumbsUp,
+  FaRegCommentAlt,
+  FaUserCircle,
+} from "react-icons/fa";
 import Comments from "../Comments/index";
 import NewComment from "../NewComment";
 import ModalDelete from "../../components/ModalDelete";
@@ -15,10 +20,13 @@ export default function Post(props) {
   function handleClick() {
     setShowMenu((prevShowMenu) => !prevShowMenu);
   }
+
   const [modalDelete, setModalDelete] = useState(false);
   const [modalModify, setModalModify] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-
+  const styleMenu = {
+    backgroundColor: showMenu ? "#ffd7d7" : "transparent",
+  };
   //*******************COMMENT***************************
   //Clicking on the comment icon shows the comments or hides them
   const [showComments, setShowComments] = useState(false);
@@ -55,7 +63,6 @@ export default function Post(props) {
   //get like counts from API for each post
   const [likeCount, setLikeCount] = useState();
   const [likeData, setLikeData] = useState([]);
-  //const [likeClicked, setLikeClicked] = useState();
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/post/like/${props.postId}`, {
@@ -64,27 +71,29 @@ export default function Post(props) {
         "Content-Type": "application/json;charset=UTF-8",
         authorization: `Bearer ${token}`,
       },
-    })
-      .then(function (res) {
-        if (res.ok) {
-          return res.json();
-        } 
-      })
-      .then((getLikeData) => {
-        if (!getLikeData) {
-          return setLikeCount(0);
-        } else {
-          setLikeData(getLikeData.results);
-          setLikeCount(getLikeData.results.length);
-        }
-      });
+    }).then(function (res) {
+      if (res.ok) {
+        return res.json().then((getLikeData) => {
+          if (!getLikeData) {
+            return setLikeCount(0);
+          } else {
+            setLikeData(getLikeData.results);
+            setLikeCount(getLikeData.results.length);
+          }
+        });
+      }
+    });
   }, []);
   //State to determine like or dislike
   const [likes, setLikes] = useState(false);
   //changing icon's color depending on like or dislike
-  const styleLikes = {
-    backgroundColor: likes ? "pink" : "transparent",
+  const styleLikesFull = {
+    color: likes ? "#FD2D01" : "transparent",
   };
+  const styleLikesEmpty = {
+    color: likes ? "transparent" : "black",
+  };
+
   const urlLike = "http://localhost:3001/api/post/like";
   function addLike(event) {
     setLikes((prevLikes) => !prevLikes);
@@ -101,15 +110,17 @@ export default function Post(props) {
           authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ userId, postId, like }),
-      }).then((res) => {
-        if (res.ok) {
-          return res.json().then(() => {
-            setLikeCount((prevLikeCount) => {
-              return prevLikeCount + 1;
+      })
+        .then((res) => {
+          if (res.ok) {
+            return res.json().then(() => {
+              setLikeCount((prevLikeCount) => {
+                return prevLikeCount + 1;
+              }).catch((error) => console.error("error:", error));
             });
-          });
-        }
-      });
+          }
+        })
+        .catch((error) => console.error("error:", error));
     } else {
       //case of taking OFF the like
       const like = -1;
@@ -142,7 +153,7 @@ export default function Post(props) {
     setShowMenu(false);
   }
 
-  const [postTitle, setPostTitle] = useState(props.title);
+  // const [postTitle, setPostTitle] = useState(props.title);
   const [postContent, setPostContent] = useState(props.content);
   const [postImage, setPostImage] = useState(props.imageUrl);
   return (
@@ -159,7 +170,9 @@ export default function Post(props) {
         </div>
         {isAdmin === 1 || postUserId === loggedUserId ? (
           <div className="post--collapsibleMenu">
-            <button onClick={handleClick}>+</button>
+            <button onClick={handleClick} style={styleMenu}>
+              +
+            </button>
             {showMenu ? (
               <div className="post--collapsibleMenu--option">
                 <button id={props.postId} onClick={modalModifyPost}>
@@ -174,23 +187,36 @@ export default function Post(props) {
         ) : null}
       </div>
       <div>
-        <div className="post--title">{postTitle}</div>
-        <div className="post--image--container">
-          <img className="post--image" src={`${postImage}`} alt="publication" />
-        </div>
+        {postImage ? (
+          <div className="post--image--container">
+            <img
+              className="post--image"
+              src={`${postImage}`}
+              alt="publication"
+            />
+          </div>
+        ) : null}
 
         <div className="post--text">{postContent}</div>
         <div className="post--interaction">
-          <div className="post--interaction--button">
+          <div className="post--interaction--icon">
             <div className="post--like">
-              <button onClick={addLike} id={props.postId}>
-                {likeCount} <FaRegThumbsUp style={styleLikes} />
-              </button>
+              {likeCount}
+              <FaRegThumbsUp className="empty-thumb" style={styleLikesEmpty} />
+              <FaThumbsUp
+                onClick={addLike}
+                id={props.postId}
+                className="full-thumb"
+                style={styleLikesFull}
+              />
             </div>
-            <div className="post--showComments">
-              <button onClick={handleClickComments} id={props.postId}>
-                {commentCount} <FaRegCommentAlt />
-              </button>
+
+            <div
+              className="post--showComments"
+              onClick={handleClickComments}
+              id={props.postId}
+            >
+              {commentCount} <FaRegCommentAlt className="comment-icon" />
             </div>
           </div>
 
@@ -210,8 +236,6 @@ export default function Post(props) {
               postId={props.postId}
               postContent={postContent}
               setPostContent={setPostContent}
-              postTitle={postTitle}
-              setPostTitle={setPostTitle}
               postImage={postImage}
               setPostImage={setPostImage}
             />

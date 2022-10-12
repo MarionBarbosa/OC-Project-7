@@ -95,20 +95,23 @@ export default function SignUp() {
     })
       .then(function (res) {
         if (res.ok) {
-          return res.json();
+          return res
+            .json()
+            .then((data) => {
+              if (!data) {
+                setIsLoggedIn(false);
+              } else if (data.auth) {
+                setIsLoggedIn(true);
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("isAdmin", data.isAdmin);
+                navigate("/Feed", { replace: true });
+              }
+            })
+            .catch((error) => console.error("error:", error));
         }
       })
-      .then((data) => {
-        if (!data) {
-          setIsLoggedIn(false);
-        } else if (data.auth) {
-          setIsLoggedIn(true);
-          localStorage.setItem("token", data.token);
-          localStorage.setItem("userId", data.userId);
-          localStorage.setItem("isAdmin", data.isAdmin);
-          navigate("/", { replace: true });
-        }
-      });
+      .catch((error) => console.error("error:", error));
   }
   return (
     <section className="signIn">

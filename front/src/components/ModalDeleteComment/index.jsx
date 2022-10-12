@@ -15,18 +15,20 @@ export default function ModalDeleteComment(props) {
       },
     })
       .then(function (res) {
-        if (!res.ok) {
-          return alert({ message: "not working" });
+        if (res.ok) {
+          return res
+            .json()
+            .then(() => {
+              props.setCommentData((prevCommentData) =>
+                prevCommentData.filter((comment) => comment.id !== commentId)
+              );
+              props.setCommentCount((prevCommentCount) => prevCommentCount - 1);
+              props.closeModalDelete(false);
+            })
+            .catch((error) => console.error("error:", error));
         }
       })
-      .then(() => {
-        props.setCommentData((prevCommentData) =>
-          prevCommentData.filter((comment) => comment.id !== commentId)
-        );
-        console.log(props.commentData);
-        props.setCommentCount((prevCommentCount) => prevCommentCount - 1);
-        props.closeModalDelete(false);
-      });
+      .catch((error) => console.error("error:", error));
   }
   return (
     <div className="modal--background">
