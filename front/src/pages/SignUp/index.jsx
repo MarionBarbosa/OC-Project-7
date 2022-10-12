@@ -1,7 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useRef, useState, useContext } from "react";
+import { UserContext } from "../../Context";
+
 export default function SignUp() {
+  const { setIsLoggedIn } = useContext(UserContext);
+  let navigate = useNavigate();
   const passwordRef = useRef();
   const emailRef = useRef();
   const lastNameRef = useRef();
@@ -75,27 +79,44 @@ export default function SignUp() {
     const newFirstName = firstNameRef.current.value;
     //fetch: send data to API
     const urlSignUp = "http://localhost:3001/api/auth/signUp";
-    const formData = {
+    const signUpData = {
       email: newEmail,
       password: newPassword,
       lastName: newLastName,
       firstName: newFirstName,
-      admin: false,
+      admin: 0,
     };
     fetch(urlSignUp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
-    });
+      body: JSON.stringify(signUpData),
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        if (!data) {
+          setIsLoggedIn(false);
+        } else if (data.auth) {
+          setIsLoggedIn(true);
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.userId);
+          localStorage.setItem("isAdmin", data.isAdmin);
+          navigate("/", { replace: true });
+        }
+      });
   }
   return (
     <section className="signIn">
       <h1>Inscription</h1>
       <form className="signIn__form">
-        <input type="text" placeholder="Nom" ref={lastNameRef} />
         <input type="text" placeholder="Prénom" ref={firstNameRef} />
+        <input type="text" placeholder="Nom" ref={lastNameRef} />
+
         <input
           type="email"
           placeholder="Email"
@@ -111,7 +132,7 @@ export default function SignUp() {
         />
         {/* {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>} */}
         {/* <input type="password" placeholder="Confirmez mot de passe" /> */}
-        <button className="signIn--button" onSubmit={submitAccount}>
+        <button className="signIn--button" onClick={submitAccount}>
           S'inscrire
         </button>
       </form>
