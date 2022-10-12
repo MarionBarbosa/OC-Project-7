@@ -1,9 +1,7 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../../assets/icon-left-font-monochrome-white.png";
-import { FaUserCircle } from "react-icons/fa";
 import { UserContext } from "../../Context";
-//import { Link } from "react-router-dom";
 export default function Header() {
   const { setIsLoggedIn } = useContext(UserContext);
 
@@ -26,12 +24,6 @@ export default function Header() {
         </Link>
       </div>
       <section>
-        <div>
-          <FaUserCircle />
-        </div>
-        <Link to="/profile" className="link">
-          Profile
-        </Link>
         <Link to="/signIn" className="link" onClick={handleLogOut}>
           Deconnexion
         </Link>
