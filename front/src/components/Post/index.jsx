@@ -38,8 +38,15 @@ export default function Post(props) {
   const commentPerPost = props.commentData.filter(
     (comment) => comment.postId === props.postId
   );
-  const [commentCount, setCommentCount] = useState(() => commentPerPost.length);
-
+  const commentLength = commentPerPost.length;
+  console.log(commentLength);
+  const [commentCount, setCommentCount] = useState(0);
+  // if (commentLength > 0) {
+  //   setCommentCount(commentLength);
+  // }
+  useEffect(() => {
+    setCommentCount(commentLength);
+  }, [commentLength]);
   //rendering each comments in post
   const commentElements = commentPerPost.map((comment) => {
     return (
@@ -61,7 +68,7 @@ export default function Post(props) {
 
   //*******************LIKES**************************
   //get like counts from API for each post
-  const [likeCount, setLikeCount] = useState();
+  const [likeCount, setLikeCount] = useState(0);
   const [likeData, setLikeData] = useState([]);
 
   useEffect(() => {
@@ -71,18 +78,23 @@ export default function Post(props) {
         "Content-Type": "application/json;charset=UTF-8",
         authorization: `Bearer ${token}`,
       },
-    }).then(function (res) {
-      if (res.ok) {
-        return res.json().then((getLikeData) => {
-          if (!getLikeData) {
-            return setLikeCount(0);
-          } else {
-            setLikeData(getLikeData.results);
-            setLikeCount(getLikeData.results.length);
-          }
-        });
-      }
-    });
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res
+            .json()
+            .then((getLikeData) => {
+              console.log(getLikeData.results[0].userId, loggedUserId);
+              setLikeData(getLikeData.results);
+              setLikeCount(getLikeData.results.length);
+              if (getLikeData.results[0].userId === loggedUserId) {
+                console.log("same");
+              }
+            })
+            .catch((error) => console.error("error:", error));
+        }
+      })
+      .catch((error) => console.error("error:", error));
   }, []);
   //State to determine like or dislike
   const [likes, setLikes] = useState(false);
@@ -113,11 +125,14 @@ export default function Post(props) {
       })
         .then((res) => {
           if (res.ok) {
-            return res.json().then(() => {
-              setLikeCount((prevLikeCount) => {
-                return prevLikeCount + 1;
-              }).catch((error) => console.error("error:", error));
-            });
+            return res
+              .json()
+              .then(() => {
+                setLikeCount((prevLikeCount) => {
+                  return prevLikeCount + 1;
+                });
+              })
+              .catch((error) => console.error("error:", error));
           }
         })
         .catch((error) => console.error("error:", error));
@@ -153,7 +168,6 @@ export default function Post(props) {
     setShowMenu(false);
   }
 
-  // const [postTitle, setPostTitle] = useState(props.title);
   const [postContent, setPostContent] = useState(props.content);
   const [postImage, setPostImage] = useState(props.imageUrl);
   return (
@@ -193,6 +207,7 @@ export default function Post(props) {
               className="post--image"
               src={`${postImage}`}
               alt="publication"
+              style={{ maxWidth: 700, maxHeight: 500, objectFit: "cover" }}
             />
           </div>
         ) : null}
