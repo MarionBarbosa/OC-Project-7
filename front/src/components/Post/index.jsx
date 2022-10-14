@@ -1,18 +1,14 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import {
-  FaRegThumbsUp,
-  FaThumbsUp,
-  FaRegCommentAlt,
-  FaUserCircle,
-} from "react-icons/fa";
+import { FaRegCommentAlt, FaUserCircle } from "react-icons/fa";
+
 import Comments from "../Comments/index";
 import NewComment from "../NewComment";
 import ModalDelete from "../../components/ModalDelete";
 import ModalModify from "../../components/ModalModify";
+import Likes from "../Likes";
 
 export default function Post(props) {
-  const token = localStorage.getItem("token");
   const postUserId = props.postUserId;
   const isAdmin = +localStorage.getItem("isAdmin");
   const loggedUserId = +localStorage.getItem("userId");
@@ -66,98 +62,6 @@ export default function Post(props) {
     );
   });
 
-  //*******************LIKES**************************
-  //get like counts from API for each post
-  const [likeCount, setLikeCount] = useState(0);
-  const [likeData, setLikeData] = useState([]);
-
-  useEffect(() => {
-    fetch(`http://localhost:3001/api/post/like/${props.postId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json;charset=UTF-8",
-        authorization: `Bearer ${token}`,
-      },
-    })
-      .then(function (res) {
-        if (res.ok) {
-          return res
-            .json()
-            .then((getLikeData) => {
-              console.log(getLikeData.results[0].userId, loggedUserId);
-              setLikeData(getLikeData.results);
-              setLikeCount(getLikeData.results.length);
-              if (getLikeData.results[0].userId === loggedUserId) {
-                console.log("same");
-              }
-            })
-            .catch((error) => console.error("error:", error));
-        }
-      })
-      .catch((error) => console.error("error:", error));
-  }, []);
-  //State to determine like or dislike
-  const [likes, setLikes] = useState(false);
-  //changing icon's color depending on like or dislike
-  const styleLikesFull = {
-    color: likes ? "#FD2D01" : "transparent",
-  };
-  const styleLikesEmpty = {
-    color: likes ? "transparent" : "black",
-  };
-
-  const urlLike = "http://localhost:3001/api/post/like";
-  function addLike(event) {
-    setLikes((prevLikes) => !prevLikes);
-    const postId = event.currentTarget.id;
-    const userId = +localStorage.getItem("userId");
-    if (!likes) {
-      //case of liking a post
-      const like = 1;
-
-      fetch(urlLike, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json;charset=UTF-8",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId, postId, like }),
-      })
-        .then((res) => {
-          if (res.ok) {
-            return res
-              .json()
-              .then(() => {
-                setLikeCount((prevLikeCount) => {
-                  return prevLikeCount + 1;
-                });
-              })
-              .catch((error) => console.error("error:", error));
-          }
-        })
-        .catch((error) => console.error("error:", error));
-    } else {
-      //case of taking OFF the like
-      const like = -1;
-
-      fetch(urlLike, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json;charset=UTF-8",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ userId, postId, like }),
-      }).then((res) => {
-        if (res.ok) {
-          return res.json().then(() => {
-            setLikeCount((prevLikeCount) => {
-              return prevLikeCount - 1;
-            });
-          });
-        }
-      });
-    }
-  }
   //function to open the modal windows on delete and modify on the Posts
   function modalDeletePost() {
     setModalDelete(true);
@@ -215,17 +119,7 @@ export default function Post(props) {
         <div className="post--text">{postContent}</div>
         <div className="post--interaction">
           <div className="post--interaction--icon">
-            <div className="post--like">
-              {likeCount}
-              <FaRegThumbsUp className="empty-thumb" style={styleLikesEmpty} />
-              <FaThumbsUp
-                onClick={addLike}
-                id={props.postId}
-                className="full-thumb"
-                style={styleLikesFull}
-              />
-            </div>
-
+            <Likes postId={props.postId} />
             <div
               className="post--showComments"
               onClick={handleClickComments}
