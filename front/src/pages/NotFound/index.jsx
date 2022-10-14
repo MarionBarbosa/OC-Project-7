@@ -4,7 +4,7 @@ export default function NotFound() {
     <div>
       <h1>Oops! Cette page n'existe pas</h1>
       <p>Suivez le lien pour retrouver votre chemin!</p>
-      <Link to="/">Feed</Link>
+      <Link to="/signIn">Login</Link>
     </div>
   );
 }
