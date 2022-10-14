@@ -33,9 +33,9 @@ export default function ModalDelete(props) {
   return (
     <div className="modal--background">
       <div className="modal--container">
-        <h2>Confirmer la suppression</h2>
+        <h2 className="modal--header">Confirmer la suppression</h2>
 
-        <div className="modal--button">
+        <div className="button--container">
           <button onClick={() => props.closeModalDelete(false)}>Annuler</button>
           <button onClick={handleClickDelete} id={props.postId}>
             Supprimer
