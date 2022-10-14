@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { UserContext } from "../../Context";
+import Logo from "../../assets/icon-left-font.png";
 
 export default function SignIn() {
   let navigate = useNavigate();
@@ -43,7 +44,7 @@ export default function SignIn() {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("isAdmin", data.isAdmin);
-                navigate("/Feed", { replace: true });
+                navigate("/home", { replace: true });
               }
             })
             .catch((error) => console.error("error:", error));
@@ -54,33 +55,38 @@ export default function SignIn() {
       .catch((error) => console.error("error:", error));
   }
   return (
-    <section className="signIn">
-      <h1>Connectez-vous</h1>
-      <form className="signIn__form">
-        <input
-          type="email"
-          placeholder="Email"
-          name="email"
-          onChange={handleChange}
-          onClick={handleClick}
-        />
+    <div className="signUp--container">
+      <section className="signIn--logo">
+        <img src={Logo} alt="Logo" />
+      </section>
+      <section className="signIn--form">
+        <h1>Connectez-vous</h1>
+        <form>
+          <input
+            type="email"
+            placeholder="Email"
+            name="email"
+            onChange={handleChange}
+            onClick={handleClick}
+          />
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          onChange={handleChange}
-          name="password"
-          onClick={handleClick}
-        />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button className="signIn--button" onClick={handleSubmit}>
-          Se connecter
-        </button>
-      </form>
-      <p>Pas encore de compte?</p>
-      <Link to="/signUp" className="signIn--button">
-        Créer un compte
-      </Link>
-    </section>
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            onChange={handleChange}
+            name="password"
+            onClick={handleClick}
+          />
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <button className="signIn--button" onClick={handleSubmit}>
+            Se connecter
+          </button>
+        </form>
+        <p>Pas encore de compte?</p>
+        <Link to="/signUp" className="signIn--link">
+          Créer un compte
+        </Link>
+      </section>
+    </div>
   );
 }
