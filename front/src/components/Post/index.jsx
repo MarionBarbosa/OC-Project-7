@@ -10,9 +10,11 @@ import Likes from "../Likes";
 
 export default function Post(props) {
   const postUserId = props.postUserId;
+  const token = localStorage.getItem("token");
   const isAdmin = +localStorage.getItem("isAdmin");
   const loggedUserId = +localStorage.getItem("userId");
-
+  const date = new Date(props.timestamp);
+  const dateStr = date.toLocaleString();
   function handleClick() {
     setShowMenu((prevShowMenu) => !prevShowMenu);
   }
@@ -20,9 +22,34 @@ export default function Post(props) {
   const [modalDelete, setModalDelete] = useState(false);
   const [modalModify, setModalModify] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const styleMenu = {
     backgroundColor: showMenu ? "#ffd7d7" : "transparent",
   };
+
+  const urlUser = `http://localhost:3001/api/auth/${postUserId}`;
+  useEffect(() => {
+    fetch(urlUser, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
+      },
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res
+            .json()
+            .then((data) => {
+              setFirstName(data.results[0].firstName);
+              setLastName(data.results[0].lastName);
+            })
+            .catch((error) => console.error("error:", error));
+        }
+      })
+      .catch((error) => console.error("error:", error));
+  }, []);
   //*******************COMMENT***************************
   //Clicking on the comment icon shows the comments or hides them
   const [showComments, setShowComments] = useState(false);
@@ -35,11 +62,8 @@ export default function Post(props) {
     (comment) => comment.postId === props.postId
   );
   const commentLength = commentPerPost.length;
-  console.log(commentLength);
   const [commentCount, setCommentCount] = useState(0);
-  // if (commentLength > 0) {
-  //   setCommentCount(commentLength);
-  // }
+
   useEffect(() => {
     setCommentCount(commentLength);
   }, [commentLength]);
@@ -82,9 +106,11 @@ export default function Post(props) {
             <div className="post--profile--picture">
               <FaUserCircle />
             </div>
-            <div className="post--profile--name">NAME</div>
+            <div className="post--profile--name">
+              {firstName} {lastName}
+            </div>
           </div>
-          <div>{props.timestamp}</div>
+          <div>publié le {dateStr}</div>
         </div>
         {isAdmin === 1 || postUserId === loggedUserId ? (
           <div className="post--collapsibleMenu">
