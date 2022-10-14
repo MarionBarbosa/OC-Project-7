@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState, useContext } from "react";
 import { UserContext } from "../../Context";
+import Logo from "../../assets/icon-left-font.png";
 
 export default function SignUp() {
   const { setIsLoggedIn } = useContext(UserContext);
@@ -105,7 +106,7 @@ export default function SignUp() {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("isAdmin", data.isAdmin);
-                navigate("/Feed", { replace: true });
+                navigate("/home", { replace: true });
               }
             })
             .catch((error) => console.error("error:", error));
@@ -114,35 +115,40 @@ export default function SignUp() {
       .catch((error) => console.error("error:", error));
   }
   return (
-    <section className="signIn">
-      <h1>Inscription</h1>
-      <form className="signIn__form">
-        <input type="text" placeholder="Prénom" ref={firstNameRef} />
-        <input type="text" placeholder="Nom" ref={lastNameRef} />
+    <div className="signUp--container">
+      <section className="signIn--logo">
+        <img src={Logo} alt="Logo" />
+      </section>
+      <section className="signIn--form">
+        <h1>Inscription</h1>
+        <form>
+          <input type="text" placeholder="Prénom" ref={firstNameRef} />
+          <input type="text" placeholder="Nom" ref={lastNameRef} />
 
-        <input
-          type="email"
-          placeholder="Email"
-          ref={emailRef}
-          onBlur={handleChangeEmail}
-        />
-        {errorEmail && <p style={{ color: "red" }}>{errorEmail}</p>}
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          ref={passwordRef}
-          // onChange={isValidPassword}
-        />
-        {/* {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>} */}
-        {/* <input type="password" placeholder="Confirmez mot de passe" /> */}
-        <button className="signIn--button" onClick={submitAccount}>
-          S'inscrire
-        </button>
-      </form>
-      <p>Déjà un compte?</p>
-      <Link to="/signIn" className="signIn--button">
-        Se connecter
-      </Link>
-    </section>
+          <input
+            type="email"
+            placeholder="Email"
+            ref={emailRef}
+            onBlur={handleChangeEmail}
+          />
+          {errorEmail && <p style={{ color: "red" }}>{errorEmail}</p>}
+          <input
+            type="password"
+            placeholder="Mot de passe"
+            ref={passwordRef}
+            // onChange={isValidPassword}
+          />
+          {/* {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>} */}
+          {/* <input type="password" placeholder="Confirmez mot de passe" /> */}
+          <button className="signIn--button" onClick={submitAccount}>
+            S'inscrire
+          </button>
+        </form>
+        <p>Déjà un compte?</p>
+        <Link to="/" className="signIn--redirect">
+          Se connecter
+        </Link>
+      </section>
+    </div>
   );
 }
