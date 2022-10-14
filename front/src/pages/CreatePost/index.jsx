@@ -1,13 +1,14 @@
 import React from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaRegImage } from "react-icons/fa";
 export default function CreatePost() {
   //getting all input data
   let navigate = useNavigate();
   const formData = new FormData();
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
+  const [file, setFile] = useState();
   const [image, setImage] = useState("");
 
   const [content, setContent] = useState("");
@@ -34,7 +35,7 @@ export default function CreatePost() {
               //clearing all fields
               setContent("");
               imageRef.current.value = null;
-              navigate("/", { replace: true });
+              navigate("/home", { replace: true });
             })
             .catch((error) => console.error("error:", error));
         }
@@ -52,6 +53,15 @@ export default function CreatePost() {
           <div className="post--profile--name">NAME</div>
         </div>
         <form className="createPost" encType="multipart/form-data">
+          {file ? (
+            <div>
+              <img
+                src={file}
+                alt="choisie par l'utilisateur"
+                className="uploaded-image"
+              />
+            </div>
+          ) : null}
           <textarea
             className="createPost--content"
             type="text"
@@ -59,20 +69,36 @@ export default function CreatePost() {
             value={content}
             onChange={(event) => setContent(event.target.value)}
           />
-          <input
-            className="createPost--image"
-            type="file"
-            name="image"
-            onChange={(event) => setImage(event.target.files[0])}
-            ref={imageRef}
-          />
-          <button
-            className="createPost--button"
-            disabled={!content}
-            onClick={handleSubmitPost}
-          >
-            Publier
-          </button>
+          <label for="input-file" className="upload--image">
+            Ajouter une image
+            <FaRegImage className="icon-upload-image" />
+            <input
+              id="input-file"
+              className="input--image"
+              type="file"
+              name="image"
+              onChange={(event) => {
+                setImage(event.target.files[0]);
+                setFile(URL.createObjectURL(event.target.files[0]));
+              }}
+              ref={imageRef}
+            />
+          </label>
+          <div className="button--container">
+            <button
+              className="createPost--button"
+              onClick={() => navigate("/home", { replace: true })}
+            >
+              Annuler
+            </button>
+            <button
+              className="createPost--button"
+              disabled={!content}
+              onClick={handleSubmitPost}
+            >
+              Publier
+            </button>
+          </div>
         </form>
       </div>
     </div>
