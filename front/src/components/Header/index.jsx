@@ -6,17 +6,13 @@ export default function Header() {
   const { setIsLoggedIn } = useContext(UserContext);
 
   function handleLogOut() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("isAdmin");
+    localStorage.clear();
     setIsLoggedIn(false);
   }
   return (
     <header>
       <div className="header--logo">
-        <Link to="/" onClick={handleLogOut}>
-          <img src={Logo} alt="logo" className="header--logo--image" />
-        </Link>
+        <img src={Logo} alt="logo" className="header--logo--image" />
       </div>
       <div className="header--newPost">
         <Link to="/CreatePost" className="link">
@@ -24,7 +20,7 @@ export default function Header() {
         </Link>
       </div>
       <section>
-        <Link to="/" className="link" onClick={handleLogOut}>
+        <Link to="/signIn" className="link" onClick={handleLogOut}>
           Deconnexion
         </Link>
       </section>
