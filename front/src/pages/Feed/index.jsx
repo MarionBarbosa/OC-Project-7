@@ -25,7 +25,6 @@ export default function Feed() {
     }).then(function (res) {
       if (res.ok) {
         return res.json().then((data) => {
-          console.log(data);
           setPostData(
             data.results.sort(
               (a, b) =>
@@ -75,8 +74,6 @@ export default function Feed() {
         updateComment={updateComment}
         postData={postData}
         setPostData={setPostData}
-        firstName={post.firstName}
-        lastName={post.lastName}
       />
     );
   });
