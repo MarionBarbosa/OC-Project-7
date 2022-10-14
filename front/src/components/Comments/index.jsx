@@ -18,7 +18,7 @@ export default function Comments(props) {
   }
   return (
     <div className="post--comment">
-      <div>
+      <div className="comment--container">
         <div className="comment--user">
           <p className="comment--user--name">NAME</p>
           <p>{props.timestamp}</p>
