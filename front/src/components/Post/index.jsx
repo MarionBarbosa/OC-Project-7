@@ -82,6 +82,8 @@ export default function Post(props) {
         commentData={props.commentData}
         setCommentData={props.setCommentData}
         deleteComment={props.deleteComment}
+        firstName={firstName}
+        lastName={lastName}
       />
     );
   });
