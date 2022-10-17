@@ -2,7 +2,16 @@ const bcrypt = require("bcrypt");
 const db = require("../mysql_config");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-
+//check is fields are empty
+function inputValidation(value) {
+  const isEmpty = /^(?!\s*$).+/;
+  if (!isEmpty.test(value)) {
+    return "champ vide";
+  } else {
+    return null;
+  }
+}
+//check email valid
 //function to check a strong password was typed.
 function checkPasswordValidation(value) {
   const isWhitespace = /^(?=.*\s)/;
@@ -39,64 +48,78 @@ function checkPasswordValidation(value) {
 
 exports.signup = (req, res) => {
   //checking if the password is strong, if so password goes through Bcrypt
-  if (checkPasswordValidation(req.body.password) == null) {
-    const email = req.body.email;
-    const password = req.body.password;
-    const firstName = req.body.firstName;
-    const lastName = req.body.lastName;
-    const admin = req.body.admin;
-    bcrypt
-      .hash(password, 10)
-      .then((hash) => {
-        const user = new User(firstName, lastName, email, hash, admin);
-        db.query(
-          `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?, admin=?`,
-          [
-            user.firstName,
-            user.lastName,
-            user.email,
-            user.password,
-            user.admin,
-          ],
-          (error, results) => {
-            if (error) {
-              res.json({ error });
-            } else {
+  const { email, password, firstName, lastName, admin } = req.body;
+
+  db.query("SELECT * FROM user WHERE email=?", email, (error, results) => {
+    if (error) {
+      res.json({ error });
+    } else if (results == 0) {
+      if (
+        inputValidation(req.body.firstName) == null &&
+        inputValidation(req.body.lastName) == null
+      ) {
+        if (checkPasswordValidation(req.body.password) == null) {
+          bcrypt
+            .hash(password, 10)
+            .then((hash) => {
+              const user = new User(firstName, lastName, email, hash, admin);
               db.query(
-                "SELECT * FROM user WHERE id=?",
-                results.insertId,
+                `INSERT INTO user SET firstName=?, lastName=?, email=?, password=?, admin=?`,
+                [
+                  user.firstName,
+                  user.lastName,
+                  user.email,
+                  user.password,
+                  user.admin,
+                ],
                 (error, results) => {
                   if (error) {
                     res.json({ error });
-                  } else if (results == 0) {
-                    return res.status(404).json({ error: "user not found" });
                   } else {
-                    res.status(200).json({
-                      auth: true,
-                      userId: results[0].id,
-                      token: jwt.sign(
-                        { userId: results[0].id },
-                        process.env.KEY_TOKEN,
-                        {
-                          expiresIn: "1h",
+                    db.query(
+                      "SELECT * FROM user WHERE id=?",
+                      results.insertId,
+                      (error, results) => {
+                        if (error) {
+                          res.json({ error });
+                        } else if (results == 0) {
+                          return res
+                            .status(404)
+                            .json({ error: "user not found" });
+                        } else {
+                          res.status(200).json({
+                            auth: true,
+                            userId: results[0].id,
+                            token: jwt.sign(
+                              { userId: results[0].id },
+                              process.env.KEY_TOKEN,
+                              {
+                                expiresIn: "1h",
+                              }
+                            ),
+                            isAdmin: results[0].admin,
+                          });
                         }
-                      ),
-                      isAdmin: results[0].admin,
-                    });
+                      }
+                    );
                   }
                 }
               );
-            }
-          }
-        );
-      })
-      .catch((error) => res.status(500).json({ error }));
-  } else {
-    return res.status(401).json({
-      message:
-        "Le mot de passe doit contenir minimum 10 caratères, dont 1 majuscule, 1 chiffre, 1 symbole et sans espaces",
-    });
-  }
+            })
+            .catch((error) => res.status(500).json({ error }));
+        } else {
+          return res.status(401).json({
+            message:
+              "Le mot de passe doit contenir minimum 10 caratères, dont 1 majuscule, 1 chiffre, 1 symbole et sans espaces",
+          });
+        }
+      } else {
+        res.status(400).json({ message: "champ vide" });
+      }
+    } else if (results[0].email === req.body.email) {
+      return res.status(200).json({ email: results[0].email });
+    }
+  });
 };
 
 exports.login = (req, res) => {
@@ -135,4 +158,21 @@ exports.login = (req, res) => {
         .catch((error) => res.status(500).json({ error }));
     }
   });
+};
+
+exports.getOneUser = (req, res) => {
+  const userId = req.params.userId;
+  db.query(
+    "SELECT firstName, lastName FROM user WHERE id=?",
+    userId,
+    (error, results) => {
+      if (error) {
+        res.json({ error });
+      } else if (results == 0) {
+        return res.status(404).json({ error: "User not found" });
+      } else {
+        return res.status(200).json({ results });
+      }
+    }
+  );
 };
