@@ -16,12 +16,16 @@ export default function Comments(props) {
   function modalModifyComment() {
     setModalModify(true);
   }
+  const date = new Date(props.timestamp);
+  const dateStr = date.toLocaleString();
   return (
     <div className="post--comment">
       <div className="comment--container">
         <div className="comment--user">
-          <p className="comment--user--name">NAME</p>
-          <p>{props.timestamp}</p>
+          <p className="comment--user--name">
+            {props.firstName} {props.lastName}
+          </p>
+          <p>{dateStr}</p>
         </div>
         <div className="comment--content">
           <p>{commentContent}</p>
