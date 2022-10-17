@@ -133,8 +133,9 @@ exports.modifyPost = (req, res, next) => {
         return res.status(400).json({ message: "access denied" });
       } else {
         //getting the old image name in case it needs deleting
-        // const oldFilename = results[0].imageUrl.split("/images/")[1];
+
         if (req.file) {
+          const oldFilename = results[0].imageUrl.split("/images/")[1];
           const postImage = {
             ...postObject,
             imageUrl: `${req.protocol}://${req.get("host")}/images/${
@@ -152,9 +153,9 @@ exports.modifyPost = (req, res, next) => {
                 return res.status(404).json({ error: "Post not modified" });
               } else {
                 //deleting previous image
-                // fs.unlink(`images/${oldFilename}`, (err) => {
-                //   message: "Image not deleted";
-                // });
+                fs.unlink(`images/${oldFilename}`, (err) => {
+                  message: "Image not deleted";
+                });
                 db.query(
                   "SELECT * FROM post WHERE id=?",
                   postId,
@@ -275,25 +276,29 @@ exports.deletePost = (req, res, next) => {
         }
       );
       //deleting image and post
-      // const filename = results.imageUrl.split("/images/")[1];
-      // fs.unlink(`images/${filename}`, () => {
-      db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
-        if (error) {
-          res.json({ error });
-        } else if (results == 0) {
-          return res.status(404).json({ error: "Post not found" });
-        } else {
-          db.query("DELETE FROM post WHERE id =?", postId, (error, results) => {
-            if (error) {
-              res.json({ error });
-            } else if (results == 0) {
-              return res.status(404).json({ error: "Post not deleted" });
-            } else {
-              res.status(200).json({ message: "post deleted" });
-            }
-          });
-        }
-        // });
+      const filename = results[0].imageUrl.split("/images/")[1];
+      fs.unlink(`images/${filename}`, () => {
+        db.query("SELECT * FROM post WHERE id=?", postId, (error, results) => {
+          if (error) {
+            res.json({ error });
+          } else if (results == 0) {
+            return res.status(404).json({ error: "Post not found" });
+          } else {
+            db.query(
+              "DELETE FROM post WHERE id =?",
+              postId,
+              (error, results) => {
+                if (error) {
+                  res.json({ error });
+                } else if (results == 0) {
+                  return res.status(404).json({ error: "Post not deleted" });
+                } else {
+                  res.status(200).json({ message: "post deleted" });
+                }
+              }
+            );
+          }
+        });
       });
     }
   });
