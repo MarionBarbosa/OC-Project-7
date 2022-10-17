@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import "./style.css";
 
 import Feed from "./pages/Feed";
@@ -24,6 +29,7 @@ export default function App() {
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/" element={<Navigate to="/signIn" />} />
         </Routes>
       </UserContext.Provider>
     </Router>
