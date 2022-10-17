@@ -7,60 +7,63 @@ import Logo from "../../assets/icon-left-font.png";
 export default function SignUp() {
   const { setIsLoggedIn } = useContext(UserContext);
   let navigate = useNavigate();
-  const passwordRef = useRef();
-  const emailRef = useRef();
-  const lastNameRef = useRef();
-  const firstNameRef = useRef();
+  const refPassword = useRef(null);
   const [errorEmail, setErrorEmail] = useState(null);
-  //const [errorPassword, setErrorPassword] = useState(null);
+  const [errorInputFirst, setErrorInputFirst] = useState(null);
+  const [errorInputLast, setErrorInputLast] = useState(null);
+  const [errorPassword, setErrorPassword] = useState(null);
   //check email is valid
   function isValidEmail(value) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
   }
+  function isValidInput(value) {
+    return /^(?!\s*$).+/.test(value);
+  }
 
-  //checking password is valid
-  // function isValidPassword(event) {
-  //   const isWhitespace = /^(?=.*\s)/;
-  //   if (isWhitespace.test(event.target.value)) {
-  //     return setErrorPassword("Le mot de passe ne peut contenir d'espaces.");
-  //   }
+  // checking password is valid
+  function isValidPassword(value) {
+    const isWhitespace = /^(?=.*\s)/;
+    if (isWhitespace.test(value)) {
+      return setErrorPassword("Le mot de passe ne peut contenir d'espaces.");
+    }
 
-  //   const isContainsUppercase = /^(?=.*[A-Z])/;
-  //   if (!isContainsUppercase.test(event.target.value)) {
-  //     return setErrorPassword(
-  //       "Le mot de passe doit contenir au minimum 1 majuscule."
-  //     );
-  //   }
+    const isContainsUppercase = /^(?=.*[A-Z])/;
+    if (!isContainsUppercase.test(value)) {
+      return setErrorPassword(
+        "Le mot de passe doit contenir au minimum 1 majuscule."
+      );
+    }
 
-  //   const isContainsLowercase = /^(?=.*[a-z])/;
-  //   if (!isContainsLowercase.test(event.target.value)) {
-  //     return setErrorPassword(
-  //       "Le mot de passe doit contenir au minimum 1 minuscule."
-  //     );
-  //   }
+    const isContainsLowercase = /^(?=.*[a-z])/;
+    if (!isContainsLowercase.test(value)) {
+      return setErrorPassword(
+        "Le mot de passe doit contenir au minimum 1 minuscule."
+      );
+    }
 
-  //   const isContainsNumber = /^(?=.*[0-9])/;
-  //   if (!isContainsNumber.test(event.target.value)) {
-  //     return setErrorPassword(
-  //       "Le mot de passe doit contenir au minimum 1 chiffre."
-  //     );
-  //   }
+    const isContainsNumber = /^(?=.*[0-9])/;
+    if (!isContainsNumber.test(value)) {
+      return setErrorPassword(
+        "Le mot de passe doit contenir au minimum 1 chiffre."
+      );
+    }
 
-  //   const isContainsSymbol = /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹])/;
-  //   if (!isContainsSymbol.test(event.target.value)) {
-  //     return setErrorPassword(
-  //       "Le mot de passe doit contenir au minimum 1 symbole."
-  //     );
-  //   }
+    const isContainsSymbol = /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹])/;
+    if (!isContainsSymbol.test(value)) {
+      return setErrorPassword(
+        "Le mot de passe doit contenir au minimum 1 symbole."
+      );
+    }
 
-  //   const isValidLength = /^.{10,}$/;
-  //   if (!isValidLength.test(event.target.value)) {
-  //     return setErrorPassword(
-  //       "Le mot de passe doit contenir un minimum de 10 caratères."
-  //     );
-  //   }
-  //   return null;
-  // }
+    const isValidLength = /^.{10,}$/;
+    if (!isValidLength.test(value)) {
+      return setErrorPassword(
+        "Le mot de passe doit contenir un minimum de 10 caratères."
+      );
+    }
+    setErrorPassword("");
+    return null;
+  }
 
   function handleChangeEmail(event) {
     if (!isValidEmail(event.target.value)) {
@@ -72,27 +75,50 @@ export default function SignUp() {
     }
   }
 
+  function checkInputFirstName(event) {
+    if (!isValidInput(event.target.value)) {
+      setErrorInputFirst(`Quel est votre prénom?`);
+    } else {
+      setErrorInputFirst(null);
+    }
+  }
+  function checkInputLastName(event) {
+    if (!isValidInput(event.target.value)) {
+      setErrorInputLast(`Quel est votre nom?`);
+    } else {
+      setErrorInputLast(null);
+    }
+  }
+  const [formSignUp, setFormSignUp] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    admin: 0,
+  });
+  function handleChange(event) {
+    if (document.activeElement === refPassword.current) {
+      isValidPassword(event.currentTarget.value);
+    }
+    setFormSignUp((prevFormSignin) => {
+      return {
+        ...prevFormSignin,
+        [event.target.name]: event.target.value,
+      };
+    });
+  }
   function submitAccount(event) {
     event.preventDefault();
-    const newEmail = emailRef.current.value;
-    const newPassword = passwordRef.current.value;
-    const newLastName = lastNameRef.current.value;
-    const newFirstName = firstNameRef.current.value;
+
     //fetch: send data to API
     const urlSignUp = "http://localhost:3001/api/auth/signUp";
-    const signUpData = {
-      email: newEmail,
-      password: newPassword,
-      lastName: newLastName,
-      firstName: newFirstName,
-      admin: 0,
-    };
+
     fetch(urlSignUp, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(signUpData),
+      body: JSON.stringify(formSignUp),
     })
       .then(function (res) {
         if (res.ok) {
@@ -107,6 +133,9 @@ export default function SignUp() {
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("isAdmin", data.isAdmin);
                 navigate("/home", { replace: true });
+              } else if (data.email) {
+                console.log(data.email);
+                setErrorEmail("Cet email est déjà utilisé");
               }
             })
             .catch((error) => console.error("error:", error));
@@ -120,32 +149,85 @@ export default function SignUp() {
         <img src={Logo} alt="Logo" />
       </section>
       <section className="signIn--form">
-        <h1>Inscription</h1>
+        <h1 className="signIn--header">Inscription</h1>
         <form>
-          <input type="text" placeholder="Prénom" ref={firstNameRef} />
-          <input type="text" placeholder="Nom" ref={lastNameRef} />
+          <input
+            type="text"
+            placeholder="Prénom"
+            name="firstName"
+            onChange={handleChange}
+            onBlur={checkInputFirstName}
+            required
+          />
+          {errorInputFirst && (
+            <p
+              style={{
+                color: "red",
+                marginTop: 3,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {errorInputFirst}
+            </p>
+          )}
+          <input
+            type="text"
+            placeholder="Nom"
+            name="lastName"
+            onChange={handleChange}
+            onBlur={checkInputLastName}
+            required
+          />
+          {errorInputLast && (
+            <p
+              style={{
+                color: "red",
+                marginTop: 3,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {errorInputLast}
+            </p>
+          )}
 
           <input
             type="email"
             placeholder="Email"
-            ref={emailRef}
+            name="email"
+            onChange={handleChange}
             onBlur={handleChangeEmail}
+            required
           />
-          {errorEmail && <p style={{ color: "red" }}>{errorEmail}</p>}
+          {errorEmail && (
+            <p
+              style={{
+                color: "red",
+                marginTop: 3,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {errorEmail}
+            </p>
+          )}
           <input
             type="password"
             placeholder="Mot de passe"
-            ref={passwordRef}
-            // onChange={isValidPassword}
+            name="password"
+            ref={refPassword}
+            onChange={handleChange}
+            required
           />
-          {/* {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>} */}
-          {/* <input type="password" placeholder="Confirmez mot de passe" /> */}
+          {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>}
+
           <button className="signIn--button" onClick={submitAccount}>
             S'inscrire
           </button>
         </form>
         <p>Déjà un compte?</p>
-        <Link to="/" className="signIn--redirect">
+        <Link to="/signIn" className="signIn--redirect">
           Se connecter
         </Link>
       </section>
