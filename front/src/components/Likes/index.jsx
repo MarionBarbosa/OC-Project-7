@@ -8,6 +8,7 @@ export default function Likes(props) {
   const [likeData, setLikeData] = useState([]);
   const [likes, setLikes] = useState(false);
   const token = localStorage.getItem("token");
+  const userId = +localStorage.getItem("userId");
 
   useEffect(() => {
     fetch(`http://localhost:3001/api/post/like/${props.postId}`, {
@@ -24,14 +25,22 @@ export default function Likes(props) {
             .then((getLikeData) => {
               setLikeData(getLikeData.results);
               setLikeCount(getLikeData.results.length);
-              console.log(likeCount);
             })
             .catch((error) => console.error("error:", error));
         }
       })
       .catch((error) => console.error("error:", error));
   }, []);
-  //State to determine like or dislike
+  useEffect(() => {
+    const likePerUser = likeData.filter((like) => userId === like.userId);
+
+    if (likePerUser.length > 0) {
+      setLikes(true);
+    } else {
+      setLikes(false);
+    }
+  }, [likeData, userId]);
+
   //changing icon's color depending on like or dislike
   const styleLikesFull = {
     color: likes ? "#FD2D01" : "transparent",
@@ -43,9 +52,9 @@ export default function Likes(props) {
   const urlLike = "http://localhost:3001/api/post/like";
   function addLike(event) {
     setLikes((prevLikes) => !prevLikes);
+
     const postId = event.currentTarget.id;
-    console.log("postID", postId);
-    const userId = +localStorage.getItem("userId");
+
     if (!likes) {
       //case of liking a post
       const like = 1;
@@ -93,16 +102,25 @@ export default function Likes(props) {
       });
     }
   }
+
   return (
     <div className="post--like">
       {likeCount}
-      <FaRegThumbsUp className="empty-thumb" style={styleLikesEmpty} />
-      <FaThumbsUp
-        onClick={addLike}
-        id={props.postId}
-        className="full-thumb"
-        style={styleLikesFull}
-      />
+      {likes ? (
+        <FaThumbsUp
+          id={props.postId}
+          onClick={addLike}
+          className="full-thumb"
+          style={styleLikesFull}
+        />
+      ) : (
+        <FaRegThumbsUp
+          id={props.postId}
+          onClick={addLike}
+          className="empty-thumb"
+          style={styleLikesEmpty}
+        />
+      )}
     </div>
   );
 }
