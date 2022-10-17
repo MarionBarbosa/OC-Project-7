@@ -1,10 +1,13 @@
 import React from "react";
 import { useState } from "react";
+import { FaRegImage } from "react-icons/fa";
 export default function ModalModify(props) {
   const token = localStorage.getItem("token");
   const [error, setError] = useState(null);
+  const [file, setFile] = useState();
   const [image, setImage] = useState(props.postImage);
   const [content, setContent] = useState(props.postContent);
+
   function handleError() {
     setError("");
   }
@@ -12,7 +15,6 @@ export default function ModalModify(props) {
     event.preventDefault();
     const postId = event.currentTarget.id;
     const formData = new FormData();
-    console.log(content);
     formData.append("content", content);
     formData.append("image", image);
     //sending the form to backend
@@ -25,11 +27,9 @@ export default function ModalModify(props) {
     })
       .then(function (res) {
         if (res.ok) {
-          console.log(res);
           return res
             .json()
             .then((post) => {
-              console.log(post);
               props.setPostContent(post.results[0].content);
               props.setPostImage(post.results[0].imageUrl);
               props.closeModalModify(false);
@@ -42,28 +42,36 @@ export default function ModalModify(props) {
 
       .catch((error) => console.error("error", error));
   }
+  //checking what is saved in the image state to decide if it is displayed or not
+  let imageText = image.toString().includes("http");
 
   return (
     <div className="modal--background">
-      <div className="modal--container--modify">
-        <h2>Modifier la publication</h2>
+      <div className="modal--modify--container">
+        <h2 className="modal--container--modify--header">
+          Modifier la publication
+        </h2>
         <form encType="multipart/form-data">
-          <div className="post--image--container">
-            <img
-              name="postImageUrl"
-              className="post--image"
-              src={image}
-              alt="publication"
-            />
+          <div className="modal--image--container">
+            {file ? (
+              <img
+                name="postImageUrl"
+                className="uploaded-image"
+                src={file}
+                alt="publication"
+              />
+            ) : null}
+
+            {imageText ? (
+              <img
+                name="postImageUrl"
+                className="uploaded-image"
+                src={image}
+                alt="publication"
+              />
+            ) : null}
           </div>
-          <input
-            type="file"
-            name="image"
-            onChange={(event) => setImage(event.target.files[0])}
-          />
-          <input
-            type="text"
-            className="post--text"
+          <textarea
             onChange={(event) => setContent(event.target.value)}
             placeholder="Ajouter du texte"
             name="postContent"
@@ -71,10 +79,36 @@ export default function ModalModify(props) {
             onClick={handleError}
           />
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <button onClick={() => props.closeModalModify(false)}>Annuler</button>
-          <button onClick={handleClick} id={props.postId}>
-            Confirmer
-          </button>
+          <label htmlFor="input-file" className="upload--image">
+            Ajouter une image
+            <FaRegImage className="icon-upload-image" />
+            <input
+              id="input-file"
+              className="input--image"
+              type="file"
+              name="image"
+              onChange={(event) => {
+                setImage(event.target.files[0]);
+                setFile(URL.createObjectURL(event.target.files[0]));
+              }}
+            />
+          </label>
+
+          <div className="button--container">
+            <button
+              onClick={() => props.closeModalModify(false)}
+              className="modal--button"
+            >
+              Annuler
+            </button>
+            <button
+              onClick={handleClick}
+              id={props.postId}
+              className="modal--button"
+            >
+              Confirmer
+            </button>
+          </div>
         </form>
       </div>
     </div>
