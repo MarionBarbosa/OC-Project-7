@@ -15,17 +15,19 @@ import NotFound from "./pages/NotFound";
 import { UserContext } from "../src/Context/index";
 import { useState } from "react";
 import "./style.css";
+import { hasAuthenticated } from "./services";
 import PrivateRoutes from "./components/PrivateRoutes";
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(hasAuthenticated());
 
   return (
     <Router>
-      <UserContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+      <UserContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
         <Routes>
-          <Route element={<PrivateRoutes />}></Route>
-          <Route exact path="/home" element={<Feed />} />
-          <Route path="/createPost" element={<CreatePost />} />
+          <Route element={<PrivateRoutes />}>
+            <Route path="/home" element={<Feed />} />
+            <Route path="/createPost" element={<CreatePost />} />
+          </Route>
           <Route path="/signIn" element={<SignIn />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="*" element={<NotFound />} />
