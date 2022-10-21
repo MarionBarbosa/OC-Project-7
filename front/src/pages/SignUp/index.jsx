@@ -2,16 +2,16 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState, useContext } from "react";
 import { UserContext } from "../../Context";
-import Logo from "../../assets/icon-left-font.png";
+import Logo from "../../assets/icon-left-font-resize.png";
 
 export default function SignUp() {
-  const { setIsLoggedIn } = useContext(UserContext);
   let navigate = useNavigate();
   const refPassword = useRef(null);
   const [errorEmail, setErrorEmail] = useState(null);
   const [errorInputFirst, setErrorInputFirst] = useState(null);
   const [errorInputLast, setErrorInputLast] = useState(null);
   const [errorPassword, setErrorPassword] = useState(null);
+  const { setIsAuthenticated } = useContext(UserContext);
   //check email is valid
   function isValidEmail(value) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
@@ -126,12 +126,13 @@ export default function SignUp() {
             .json()
             .then((data) => {
               if (!data) {
-                setIsLoggedIn(false);
+                //setIsLoggedIn(false);
               } else if (data.auth) {
-                setIsLoggedIn(true);
+                //setIsLoggedIn(true);
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("isAdmin", data.isAdmin);
+                setIsAuthenticated(true);
                 navigate("/home", { replace: true });
               } else if (data.email) {
                 console.log(data.email);
@@ -144,93 +145,95 @@ export default function SignUp() {
       .catch((error) => console.error("error:", error));
   }
   return (
-    <div className="signUp--container">
-      <section className="signIn--logo">
-        <img src={Logo} alt="Logo" />
-      </section>
-      <section className="signIn--form">
-        <h1 className="signIn--header">Inscription</h1>
-        <form>
-          <input
-            type="text"
-            placeholder="Prénom"
-            name="firstName"
-            onChange={handleChange}
-            onBlur={checkInputFirstName}
-            required
-          />
-          {errorInputFirst && (
-            <p
-              style={{
-                color: "red",
-                marginTop: 3,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              {errorInputFirst}
-            </p>
-          )}
-          <input
-            type="text"
-            placeholder="Nom"
-            name="lastName"
-            onChange={handleChange}
-            onBlur={checkInputLastName}
-            required
-          />
-          {errorInputLast && (
-            <p
-              style={{
-                color: "red",
-                marginTop: 3,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              {errorInputLast}
-            </p>
-          )}
+    <div className="container">
+      <div className="signUp--container">
+        <section className="signIn--logo">
+          <img src={Logo} alt="Logo" />
+        </section>
+        <section className="signIn--form">
+          <h1 className="signIn--header">Inscription</h1>
+          <form>
+            <input
+              type="text"
+              placeholder="Prénom"
+              name="firstName"
+              onChange={handleChange}
+              onBlur={checkInputFirstName}
+              required
+            />
+            {errorInputFirst && (
+              <p
+                style={{
+                  color: "red",
+                  marginTop: 3,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {errorInputFirst}
+              </p>
+            )}
+            <input
+              type="text"
+              placeholder="Nom"
+              name="lastName"
+              onChange={handleChange}
+              onBlur={checkInputLastName}
+              required
+            />
+            {errorInputLast && (
+              <p
+                style={{
+                  color: "red",
+                  marginTop: 3,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {errorInputLast}
+              </p>
+            )}
 
-          <input
-            type="email"
-            placeholder="Email"
-            name="email"
-            onChange={handleChange}
-            onBlur={handleChangeEmail}
-            required
-          />
-          {errorEmail && (
-            <p
-              style={{
-                color: "red",
-                marginTop: 3,
-                fontWeight: "bold",
-                textAlign: "center",
-              }}
-            >
-              {errorEmail}
-            </p>
-          )}
-          <input
-            type="password"
-            placeholder="Mot de passe"
-            name="password"
-            ref={refPassword}
-            onChange={handleChange}
-            required
-          />
-          {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>}
+            <input
+              type="email"
+              placeholder="Email"
+              name="email"
+              onChange={handleChange}
+              onBlur={handleChangeEmail}
+              required
+            />
+            {errorEmail && (
+              <p
+                style={{
+                  color: "red",
+                  marginTop: 3,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {errorEmail}
+              </p>
+            )}
+            <input
+              type="password"
+              placeholder="Mot de passe"
+              name="password"
+              ref={refPassword}
+              onChange={handleChange}
+              required
+            />
+            {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>}
 
-          <button className="signIn--button" onClick={submitAccount}>
-            S'inscrire
-          </button>
-        </form>
-        <p>Déjà un compte?</p>
-        <Link to="/signIn" className="signIn--redirect">
-          Se connecter
-        </Link>
-      </section>
+            <button className="signIn--button" onClick={submitAccount}>
+              S'inscrire
+            </button>
+          </form>
+          <p>Déjà un compte?</p>
+          <Link to="/signIn" className="signIn--redirect">
+            Se connecter
+          </Link>
+        </section>
+      </div>
     </div>
   );
 }

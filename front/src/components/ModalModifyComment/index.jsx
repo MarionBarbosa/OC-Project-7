@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useState } from "react";
+import { UserContext } from "../../Context";
 export default function ModalModifyComment(props) {
   //filling the input with the saved comment to be modified
   const [formData, setFormData] = useState({ commentContent: props.content });
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
+  const { setIsAuthenticated } = useContext(UserContext);
   function handleError() {
     setError("");
   }
@@ -42,7 +44,9 @@ export default function ModalModifyComment(props) {
               .then(() => props.closeModalModify(false))
               .catch((error) => console.error("error:", error))
           );
-        } else {
+        } else if (res.status === 401) {
+          setIsAuthenticated(false);
+        } else if (res.status === 400) {
           setError("champ vide");
         }
       })
@@ -57,7 +61,7 @@ export default function ModalModifyComment(props) {
           onChange={handleChange}
           onClick={handleError}
           placeholder="Ecrivez un commentaire"
-          className="post--newComments"
+          className="modal--modify--replaceComments"
           name="commentContent"
           value={formData.commentContent}
         />

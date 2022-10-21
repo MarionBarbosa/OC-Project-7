@@ -1,7 +1,10 @@
 import React from "react";
+import { useContext } from "react";
+import { UserContext } from "../../Context";
 
 export default function ModalDeleteComment(props) {
   const token = localStorage.getItem("token");
+  const { setIsAuthenticated } = useContext(UserContext);
   function handleClickDeleteComment(event) {
     event.preventDefault();
     const commentId = +event.currentTarget.id;
@@ -26,6 +29,8 @@ export default function ModalDeleteComment(props) {
               props.closeModalDelete(false);
             })
             .catch((error) => console.error("error:", error));
+        } else if (res.status === 401) {
+          setIsAuthenticated(false);
         }
       })
       .catch((error) => console.error("error:", error));

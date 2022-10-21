@@ -1,7 +1,8 @@
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUserCircle, FaRegImage } from "react-icons/fa";
+import { FaRegImage } from "react-icons/fa";
+import { UserContext } from "../../Context";
 export default function CreatePost() {
   //getting all input data
   let navigate = useNavigate();
@@ -10,9 +11,9 @@ export default function CreatePost() {
   const userId = localStorage.getItem("userId");
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
-
   const [content, setContent] = useState("");
   const imageRef = useRef(null);
+  const { setIsAuthenticated } = useContext(UserContext);
   function handleSubmitPost(event) {
     event.preventDefault();
 
@@ -38,20 +39,17 @@ export default function CreatePost() {
               navigate("/home", { replace: true });
             })
             .catch((error) => console.error("error:", error));
+        } else if (res.status === 401) {
+          setIsAuthenticated(false);
         }
       })
-      .catch((error) => console.error("error:", error));
+      .catch((error) => console.error("error:", error.message));
   }
+
   return (
-    <div>
+    <div className="container container--background">
       <div className="createPost--container">
         <h1 className="createPost--header">Créer une publication</h1>
-        <div className="post--profile--details">
-          <div className="post--profile--picture">
-            <FaUserCircle />
-          </div>
-          <div className="post--profile--name">NAME</div>
-        </div>
         <form className="createPost" encType="multipart/form-data">
           {file ? (
             <div>
