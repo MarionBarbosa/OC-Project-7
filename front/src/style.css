@@ -4,9 +4,10 @@
 body {
   margin: 0;
   font-family: "Lato", sans-serif;
+  background-color: rgb(255, 216, 215, 0.5);
 }
 
-header {
+nav {
   background-color: #fd2d01;
   display: flex;
   justify-content: space-between;
@@ -20,31 +21,54 @@ header {
   width: 100%;
   z-index: 2;
 }
-header .link,
-header .link:visited {
+nav .link,
+nav .link:visited {
   text-decoration: none;
   color: white;
 }
-header .link:hover {
+nav .link:hover {
   text-decoration: underline;
 }
-header section {
+nav ul {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  column-gap: 10px;
+  column-gap: 30px;
+}
+nav ul li {
+  list-style-type: none;
+}
+input,
+textarea {
+  cursor: auto;
 }
 button,
 input {
-  cursor: pointer;
   border-radius: 15px;
   padding: 10px;
 }
-.header--logo--image {
+button {
+  cursor: pointer;
+}
+.nav--logo--image {
   height: 150px;
+}
+.container {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
 }
 .signUp--container {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
 }
 .signIn--logo {
@@ -52,6 +76,9 @@ input {
 }
 .signIn--logo img {
   width: 100%;
+}
+.signIn--header {
+  font-size: 34px;
 }
 .signIn--form {
   flex: 1 1 50%;
@@ -79,6 +106,7 @@ input {
   background-color: #4e5166;
   color: white;
   margin-top: 35px;
+  font-weight: bold;
 }
 .signIn--form p {
   margin-top: 50px;
@@ -88,6 +116,22 @@ input {
   text-decoration: none;
   color: black;
 }
+
+@media screen and (max-width: 768px) {
+  .signUp--container {
+    flex-direction: column;
+    margin: auto;
+    row-gap: 50px;
+  }
+  .signIn--logo img {
+    width: 75%;
+  }
+  .signIn--logo {
+    text-align: center;
+    margin-top: 50px;
+  }
+}
+
 .feed {
   padding-left: 30px;
   padding-right: 30px;
@@ -95,9 +139,9 @@ input {
   margin: 150px auto;
 }
 .post {
+  background-color: white;
   display: flex;
   flex-direction: column;
-
   border-radius: 5px;
   box-shadow: 0px 0px 4px 1px #e6e7e9;
   padding: 10px;
@@ -106,8 +150,6 @@ input {
 .post--profile {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-
   padding: 7px;
 }
 .post--profile--container {
@@ -118,9 +160,19 @@ input {
   display: flex;
   flex-direction: row;
   column-gap: 10px;
+  align-items: center;
 }
-.post--profile--name {
+.post--profile--userIcon {
+  font-size: 24px;
+}
+.post--profile--name p {
   font-weight: bold;
+  font-size: 18px;
+  margin: 0;
+}
+.post--date p {
+  margin: 0;
+  font-size: 14px;
 }
 
 .post--collapsibleMenu {
@@ -132,6 +184,7 @@ input {
   font-weight: bold;
   font-size: 20px;
   border-radius: 50px;
+  padding: 5px 10px 5px 10px;
 }
 .post--collapsibleMenu button:hover {
   background-color: #ffd7d7;
@@ -159,14 +212,13 @@ input {
   padding: 7px;
 }
 .post--image--container {
-  width: 100%;
-  height: 400px;
-
   margin-top: 10px;
   text-align: center;
 }
-.post--image--container img {
-  height: 100%;
+.post--image--container img,
+.uploaded-image {
+  height: auto;
+  width: 100%;
 }
 .post--text {
   width: 100%;
@@ -205,6 +257,7 @@ input {
 .full-thumb,
 .comment-icon {
   margin-left: 4px;
+  cursor: pointer;
 }
 .comment--container {
   margin-top: 15px;
@@ -212,8 +265,14 @@ input {
   background-color: #f2f2f2;
   padding: 8px 12px 8px 12px;
 }
-.comment--user--name {
+.comment--user--name p {
   font-weight: bold;
+  font-size: 16px;
+  margin: 0;
+}
+.comment--date p {
+  font-size: 13px;
+  margin: 0;
 }
 .comment--options button {
   background-color: transparent;
@@ -227,6 +286,7 @@ input {
   flex-direction: row;
   column-gap: 7px;
   margin-top: 10px;
+  align-items: center;
 }
 .post--newComments {
   width: 100%;
@@ -238,9 +298,15 @@ input {
 .newComment--button--icon {
   margin-top: 3px;
   margin-right: 2px;
+  font-size: 23px;
+  cursor: pointer;
 }
+.newComment--button--icon:hover {
+  color: #fd2d01;
+}
+
 .modal--background {
-  background-color: rgb(240, 242, 245, 0.8);
+  background-color: rgb(240, 242, 245, 0.9);
   height: 100%;
   width: 100%;
   position: fixed;
@@ -271,6 +337,10 @@ input {
   padding: 15px;
   width: 500px;
 }
+.modal--container--modify h2 {
+  text-align: center;
+}
+
 .modal--button {
   display: flex;
   flex-direction: row;
@@ -285,21 +355,28 @@ input {
   flex-direction: column;
   margin-top: 10px;
 }
+.container--background {
+  background-color: #ffd7d7;
+}
 .createPost--container {
   border-radius: 5px;
-  box-shadow: 0px 0px 4px 1px #e6e7e9;
-  width: 500px;
-  padding: 15px;
-  margin: auto;
-  margin-top: 50px;
+  background-color: white;
+  box-shadow: 0px 0px 4px 1px #cecece;
+  width: 800px;
+  height: 90%;
+  padding: 30px;
 }
-/* .createPost--header,
+.createPost--content::placeholder {
+  font-size: 20px;
+}
+
+.createPost--header,
 .modal--container--modify--header,
 .modal--header {
   text-align: center;
   border-bottom: 1px solid #ffd7d7;
   margin-top: 0;
-} */
+}
 .uploaded-image {
   width: 100%;
   max-height: 300px;
@@ -307,15 +384,14 @@ input {
 }
 textarea {
   margin-top: 20px;
-  cursor: pointer;
   border: none;
   outline: none;
   background-color: #f2f2f2;
   border-radius: 10px;
-  padding: 5px;
+  padding: 10px;
   font-family: "lato";
   resize: none;
-  height: 100px;
+  height: 120px;
   width: 100%;
 }
 .input--image {
@@ -326,6 +402,9 @@ textarea {
   display: flex;
   align-items: center;
   cursor: pointer;
+}
+label {
+  font-size: 20px;
 }
 .icon-upload-image {
   margin-left: 10px;
@@ -350,8 +429,29 @@ textarea {
   border: none;
   background-color: #4e5166;
   color: white;
+  font-size: 18px;
 }
 button:disabled {
   background-color: #e6e7e9;
   color: #4e5166;
+  font-weight: bold;
+}
+.notFound--container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url("../src/assets/logo-white.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  font-weight: bold;
+}
+.notFound--container p {
+  font-size: 25px;
+}
+.notFound--container--link {
+  font-size: 30px;
+}
+.notFound--container--link:visited {
+  color: black;
 }
