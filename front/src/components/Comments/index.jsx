@@ -1,6 +1,6 @@
 import React from "react";
 import { useState } from "react";
-
+import { FaUserCircle } from "react-icons/fa";
 import ModalDeleteComment from "../ModalDeleteComment";
 import ModalModifyComment from "../ModalModifyComment";
 export default function Comments(props) {
@@ -22,10 +22,19 @@ export default function Comments(props) {
     <div className="post--comment">
       <div className="comment--container">
         <div className="comment--user">
-          <p className="comment--user--name">
-            {props.firstName} {props.lastName}
-          </p>
-          <p>{dateStr}</p>
+          <div className="post--profile--details">
+            <div className="post--profile--picture">
+              <FaUserCircle className="post--profile--userIcon" />
+            </div>
+            <div className="comment--user--name">
+              <p>
+                {props.firstName} {props.lastName}
+              </p>
+            </div>
+          </div>
+          <div className="comment--date">
+            <p>{dateStr}</p>
+          </div>
         </div>
         <div className="comment--content">
           <p>{commentContent}</p>
