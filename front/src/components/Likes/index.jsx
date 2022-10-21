@@ -104,7 +104,7 @@ export default function Likes(props) {
   }
 
   return (
-    <div className="post--like">
+    <div tabIndex="0" className="post--like">
       {likeCount}
       {likes ? (
         <FaThumbsUp
