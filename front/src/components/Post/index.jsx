@@ -101,18 +101,22 @@ export default function Post(props) {
   const [postContent, setPostContent] = useState(props.content);
   const [postImage, setPostImage] = useState(props.imageUrl);
   return (
-    <section className="post">
+    <article className="post">
       <div className="post--profile">
         <div className="post--profile--container">
           <div className="post--profile--details">
             <div className="post--profile--picture">
-              <FaUserCircle />
+              <FaUserCircle className="post--profile--userIcon" />
             </div>
             <div className="post--profile--name">
-              {firstName} {lastName}
+              <p>
+                {firstName} {lastName}
+              </p>
             </div>
           </div>
-          <div>publié le {dateStr}</div>
+          <div className="post--date">
+            <p>publié le {dateStr}</p>
+          </div>
         </div>
         {isAdmin === 1 || postUserId === loggedUserId ? (
           <div className="post--collapsibleMenu">
@@ -139,7 +143,6 @@ export default function Post(props) {
               className="post--image"
               src={`${postImage}`}
               alt="publication"
-              style={{ maxWidth: 700, maxHeight: 500, objectFit: "cover" }}
             />
           </div>
         ) : null}
@@ -187,6 +190,6 @@ export default function Post(props) {
           )}
         </div>
       </div>
-    </section>
+    </article>
   );
 }
