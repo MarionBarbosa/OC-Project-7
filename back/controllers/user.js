@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const db = require("../mysql_config");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+
 //check is fields are empty
 function inputValidation(value) {
   const isEmpty = /^(?!\s*$).+/;
