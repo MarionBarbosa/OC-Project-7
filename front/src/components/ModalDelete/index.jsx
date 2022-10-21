@@ -1,6 +1,9 @@
 import React from "react";
+import { useContext } from "react";
+import { UserContext } from "../../Context";
 
 export default function ModalDelete(props) {
+  const { setIsAuthenticated } = useContext(UserContext);
   function handleClickDelete(event) {
     event.preventDefault();
     const token = localStorage.getItem("token");
@@ -23,6 +26,8 @@ export default function ModalDelete(props) {
               props.closeModalDelete(false);
             })
             .catch((error) => console.error("error:", error));
+        } else if (res.status === 401) {
+          setIsAuthenticated(false);
         } else {
           alert("Un problème est survenu, veuillez essayer à nouveau");
         }
@@ -36,7 +41,14 @@ export default function ModalDelete(props) {
         <h2 className="modal--header">Confirmer la suppression</h2>
 
         <div className="button--container">
-          <button onClick={() => props.closeModalDelete(false)}>Annuler</button>
+          <button
+            onClick={() => {
+              props.closeModalDelete(false);
+              window.location.reload();
+            }}
+          >
+            Annuler
+          </button>
           <button onClick={handleClickDelete} id={props.postId}>
             Supprimer
           </button>
