@@ -5,7 +5,7 @@ import jwtDecode from "jwt-decode";
 export function hasAuthenticated() {
   const token = localStorage.getItem("token");
   const isValid = token ? tokenIsValid(token) : false;
-  console.log(isValid);
+
   if (!isValid) {
     localStorage.clear();
     return false;
