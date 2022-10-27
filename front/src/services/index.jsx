@@ -1,3 +1,5 @@
+//Functions to check token expiration and to set state according to result.
+
 import jwtDecode from "jwt-decode";
 
 export function hasAuthenticated() {

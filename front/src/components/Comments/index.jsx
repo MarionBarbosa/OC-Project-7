@@ -1,4 +1,7 @@
-import React from "react";
+//COMMENTS
+// => comment components to display user comment saved in database for each post
+// => contains button to open modal window to delete and modify.
+
 import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import ModalDeleteComment from "../ModalDeleteComment";
@@ -7,17 +10,22 @@ export default function Comments(props) {
   const commentUserId = props.commentUserId;
   const loggedUserId = +localStorage.getItem("userId");
   const isAdmin = +localStorage.getItem("isAdmin");
+  //*************************STATES*********************************
+  const [commentContent, setCommentContent] = useState(props.content);
+  //states and functions to open and close modal windows
   const [modalDelete, setModalDelete] = useState(false);
   const [modalModify, setModalModify] = useState(false);
-  const [commentContent, setCommentContent] = useState(props.content);
   function modalDeleteComment() {
     setModalDelete(true);
   }
   function modalModifyComment() {
     setModalModify(true);
   }
+  //Formatting the ISO date
   const date = new Date(props.timestamp);
   const dateStr = date.toLocaleString();
+
+  //*******************************************HTML*******************************************
   return (
     <div className="post--comment">
       <div className="comment--container">
@@ -27,9 +35,7 @@ export default function Comments(props) {
               <FaUserCircle className="post--profile--userIcon" />
             </div>
             <div className="comment--user--name">
-              <p>
-                {props.firstName} {props.lastName}
-              </p>
+              <p>NAME</p>
             </div>
           </div>
           <div className="comment--date">

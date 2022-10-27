@@ -1,15 +1,19 @@
-import React from "react";
+//MODAL WINDOW
+// => opens when delete button is clicked on comment component
+// => runs functions to delete comment
+
 import { useContext } from "react";
 import { UserContext } from "../../Context";
 
 export default function ModalDeleteComment(props) {
   const token = localStorage.getItem("token");
+  //Using context to change the isAuthenticated state if needed
   const { setIsAuthenticated } = useContext(UserContext);
   function handleClickDeleteComment(event) {
     event.preventDefault();
     const commentId = +event.currentTarget.id;
-
     const urlDeleteComment = `http://localhost:3001/api/post/comment/${commentId}`;
+    // Sending the delete request to the API
     fetch(urlDeleteComment, {
       method: "DELETE",
       headers: {
@@ -17,6 +21,7 @@ export default function ModalDeleteComment(props) {
         authorization: `Bearer ${token}`,
       },
     })
+      //if request successful, update state array to update client-side, update state count
       .then(function (res) {
         if (res.ok) {
           return res
@@ -35,6 +40,7 @@ export default function ModalDeleteComment(props) {
       })
       .catch((error) => console.error("error:", error));
   }
+  //*******************************************HTML*******************************************
   return (
     <div className="modal--background">
       <div className="modal--container">

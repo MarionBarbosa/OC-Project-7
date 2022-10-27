@@ -1,4 +1,5 @@
-import React from "react";
+//APP
+// => Render all routes/pages
 import {
   BrowserRouter as Router,
   Routes,

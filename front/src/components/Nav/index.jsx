@@ -1,13 +1,20 @@
-import React, { useContext } from "react";
+//NAVBAR
+// => contains creaPost link and logout
+
+import { useContext } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/icon-left-font-monochrome-white.png";
 import { UserContext } from "../../Context";
-export default function Header() {
+import Logo from "../../assets/icon-left-font-monochrome-white.png";
+
+export default function Navbar() {
+  //Using context to change the isAuthenticated state if needed
   const { setIsAuthenticated } = useContext(UserContext);
+
   function handleLogOut() {
     localStorage.clear();
     setIsAuthenticated(false);
   }
+  //*******************************************HTML*******************************************
   return (
     <nav>
       <div className="nav--logo">

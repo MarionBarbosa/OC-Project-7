@@ -2,6 +2,7 @@ const db = require("../mysql_config");
 const fs = require("fs");
 
 let isAdmin = 0;
+//function to check if the content of the comment is empty or whitespaces
 function inputValidation(value) {
   const isEmpty = /^(?!\s*$).+/;
   if (!isEmpty.test(value)) {
@@ -12,11 +13,16 @@ function inputValidation(value) {
 }
 
 //***************************CREATING NEW POST*********************************
+//**
+// 1- Check that the new post content is valid,
+// 2- Check user has permission
+// 3- Check if request contains a file or not
+// 3- Create the post according to above situation
+//**
 exports.createPost = (req, res) => {
   //getting the body of the request
   const postObject = req.body;
   if (inputValidation(postObject.content) === null) {
-    //checking if the userId is the same to authorise new post, if not matching throw err
     if (+postObject.userId !== req.auth.userId) {
       res.status(401).json({ message: "Access denied" });
     } else if (!req.file) {
@@ -54,8 +60,6 @@ exports.createPost = (req, res) => {
           req.file.filename
         }`,
       };
-
-      //sending new post into database
       db.query(
         "INSERT INTO post SET content=?, userId=?, imageUrl=?",
         [post.content, post.userId, post.imageUrl],
@@ -102,12 +106,18 @@ exports.getAllPosts = (req, res, next) => {
 };
 
 //****************************MODIFYING POST********************************
+//**
+// 1- Check that the new post content is valid,
+// 2- Check user has permission
+// 3- Look for post in database
+// 4- Check if request contains a file or not
+// 3- Modify the post in database according to the above situation
+//**
 exports.modifyPost = (req, res, next) => {
   const postId = req.params.id;
   const postObject = req.body;
 
   if (inputValidation(postObject.content) === null) {
-    //checking if the logged user has admin rights
     db.query(
       "SELECT * FROM user WHERE id=?",
       req.auth.userId,
@@ -133,7 +143,6 @@ exports.modifyPost = (req, res, next) => {
         return res.status(400).json({ message: "access denied" });
       } else {
         //getting the old image name in case it needs deleting
-
         if (req.file) {
           const oldFilename = results[0].imageUrl.split("/images/")[1];
           const postImage = {
@@ -209,8 +218,15 @@ exports.modifyPost = (req, res, next) => {
   }
 };
 
-//****************************DELETING POST***********************************8
-//delete all comment from the post
+//****************************DELETING POST***********************************
+//**
+// 1- Check user has permission
+// 2- Look for post in database
+// 3- If exists,
+//      a. Delete all comment related to the post
+//      b. Delete all likes related to the post
+//      c. Delete the post accordong if file or not.
+//**
 exports.deletePost = (req, res, next) => {
   const postId = req.params.id;
   db.query(

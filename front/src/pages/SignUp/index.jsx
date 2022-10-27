@@ -7,15 +7,26 @@ import Logo from "../../assets/icon-left-font-resize.png";
 export default function SignUp() {
   let navigate = useNavigate();
   const refPassword = useRef(null);
+  //*************************STATES*********************************
   const [errorEmail, setErrorEmail] = useState(null);
   const [errorInputFirst, setErrorInputFirst] = useState(null);
   const [errorInputLast, setErrorInputLast] = useState(null);
   const [errorPassword, setErrorPassword] = useState(null);
+  const [formSignUp, setFormSignUp] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    admin: 0,
+  });
+  //Using context to change the isAuthenticated state if needed
   const { setIsAuthenticated } = useContext(UserContext);
+
   //check email is valid
   function isValidEmail(value) {
     return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
   }
+  // check if input is empty or whitespace
   function isValidInput(value) {
     return /^(?!\s*$).+/.test(value);
   }
@@ -65,6 +76,7 @@ export default function SignUp() {
     return null;
   }
 
+  //*************************ERRORS*********************************
   function handleChangeEmail(event) {
     if (!isValidEmail(event.target.value)) {
       setErrorEmail(
@@ -89,13 +101,7 @@ export default function SignUp() {
       setErrorInputLast(null);
     }
   }
-  const [formSignUp, setFormSignUp] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    admin: 0,
-  });
+  //function to check for strong password and to set the form to send to API
   function handleChange(event) {
     if (document.activeElement === refPassword.current) {
       isValidPassword(event.currentTarget.value);
@@ -107,6 +113,8 @@ export default function SignUp() {
       };
     });
   }
+
+  //******************SENDING REQUEST**********************
   function submitAccount(event) {
     event.preventDefault();
 
@@ -144,6 +152,7 @@ export default function SignUp() {
       })
       .catch((error) => console.error("error:", error));
   }
+  //*******************************************HTML*******************************************
   return (
     <div className="container">
       <div className="signUp--container">

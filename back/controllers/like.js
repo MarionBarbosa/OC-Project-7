@@ -1,6 +1,11 @@
 const db = require("../mysql_config");
-//if like =1 check not already liked in database
-//if like=-1 delete like from database
+
+//*********************************ADD AND DELETE LIKES*********************************
+//**
+// 1- Check if the post has already been liked or not in the database,
+// 2- *If not liked, Add like to database
+//    *If already liked, Delete from database
+//**
 exports.createLike = (req, res, next) => {
   const { userId, postId, like } = req.body;
   //find if already liked
@@ -43,6 +48,7 @@ exports.createLike = (req, res, next) => {
     }
   );
 };
+//*********************************GET ALL LIKES*********************************
 exports.getAllLike = (req, res, next) => {
   //get all likes for ONE post
   const postId = req.params.postId;

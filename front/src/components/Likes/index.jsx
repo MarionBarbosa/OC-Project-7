@@ -1,15 +1,17 @@
+//LIKES
+// => likes component to allow user to like or unlike a post, shows like count.
+
 import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { useState, useEffect } from "react";
 
 export default function Likes(props) {
-  //*******************LIKES**************************
-  //get like counts from API for each post
+  //*************************STATES*********************************
   const [likeCount, setLikeCount] = useState(0);
   const [likeData, setLikeData] = useState([]);
   const [likes, setLikes] = useState(false);
   const token = localStorage.getItem("token");
   const userId = +localStorage.getItem("userId");
-
+  //Request likes per post from API
   useEffect(() => {
     fetch(`http://localhost:3001/api/post/like/${props.postId}`, {
       method: "GET",
@@ -31,6 +33,8 @@ export default function Likes(props) {
       })
       .catch((error) => console.error("error:", error));
   }, []);
+
+  //Checking if user already liked the post at page load.
   useEffect(() => {
     const likePerUser = likeData.filter((like) => userId === like.userId);
 
@@ -50,13 +54,14 @@ export default function Likes(props) {
   };
 
   const urlLike = "http://localhost:3001/api/post/like";
+  //function to add or delete a like
   function addLike(event) {
     setLikes((prevLikes) => !prevLikes);
 
     const postId = event.currentTarget.id;
 
     if (!likes) {
-      //case of liking a post
+      //case of ADDING a like to a post
       const like = 1;
 
       fetch(urlLike, {
@@ -81,7 +86,7 @@ export default function Likes(props) {
         })
         .catch((error) => console.error("error:", error));
     } else {
-      //case of taking OFF the like
+      //case of taking OFF a like
       const like = -1;
 
       fetch(urlLike, {
@@ -102,9 +107,9 @@ export default function Likes(props) {
       });
     }
   }
-
+  //*******************************************HTML*******************************************
   return (
-    <div tabIndex="0" className="post--like">
+    <div className="post--like">
       {likeCount}
       {likes ? (
         <FaThumbsUp
@@ -112,6 +117,7 @@ export default function Likes(props) {
           onClick={addLike}
           className="full-thumb"
           style={styleLikesFull}
+          tabIndex="0"
         />
       ) : (
         <FaRegThumbsUp
@@ -119,6 +125,7 @@ export default function Likes(props) {
           onClick={addLike}
           className="empty-thumb"
           style={styleLikesEmpty}
+          tabIndex="0"
         />
       )}
     </div>

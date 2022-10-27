@@ -1,20 +1,32 @@
-import React, { useState, useEffect, useContext } from "react";
-import Navbar from "../../components/Nav";
-import { UserContext } from "../../Context";
-import Post from "../../components/Post";
+//FEED
+// => Render post component
+//=> Fetch all posts and all comments
+
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../Context";
+
+//import components
+import Post from "../../components/Post";
+import Navbar from "../../components/Nav";
+
 export default function Feed() {
   let navigate = useNavigate();
+  const token = localStorage.getItem("token");
+  //*************************STATES*********************************
   const [postData, setPostData] = useState([]);
   const [commentData, setCommentData] = useState([]);
+
+  //Using context to change the isAuthenticated state if needed
   const { isAuthenticated, setIsAuthenticated } = useContext(UserContext);
+
   //function to update the state getting all the comments after adding a new comment so it is rendered on the page.
   const updateComment = (newComment) => {
     setCommentData((prevCommentData) => [...prevCommentData, newComment]);
   };
 
-  const token = localStorage.getItem("token");
-  //getting all posts
+  //******************SENDING REQUEST**********************
+  //request to get all posts
   useEffect(() => {
     fetch("http://localhost:3001/api/post", {
       method: "GET",
@@ -37,7 +49,7 @@ export default function Feed() {
     });
   }, []);
 
-  // //getting all comments for all posts
+  //Request to get all comments
   useEffect(() => {
     fetch("http://localhost:3001/api/post/comment", {
       method: "GET",
@@ -60,6 +72,7 @@ export default function Feed() {
       })
       .catch((error) => console.error("error:", error));
   }, []);
+
   //rendering all post in the feed page
   const postElements = postData.map((post) => {
     return (
@@ -79,12 +92,15 @@ export default function Feed() {
       />
     );
   });
+
+  //checking that the user is still authenticated.
   useEffect(() => {
-    console.log("useEffect feed");
     if (!isAuthenticated) {
       navigate("/signIn", { replace: true });
     }
   }, []);
+
+  //*******************************************HTML*******************************************
   return (
     <>
       <Navbar />

@@ -1,26 +1,34 @@
-import React from "react";
+//CREATE POST page
+// => rendered when clicking on link in Navbar
+
 import { useState, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaRegImage } from "react-icons/fa";
 import { UserContext } from "../../Context";
+
 export default function CreatePost() {
-  //getting all input data
   let navigate = useNavigate();
   const formData = new FormData();
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
+
+  //*************************STATES*********************************
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [content, setContent] = useState("");
+
   const imageRef = useRef(null);
+
+  //Using context to change the isAuthenticated state if needed
   const { setIsAuthenticated } = useContext(UserContext);
+
+  //Sending request to API
   function handleSubmitPost(event) {
     event.preventDefault();
-
+    //creating form to send to API
     formData.append("content", content);
     formData.append("userId", userId);
     formData.append("image", image);
-    //sending the form to backend
     fetch("http://localhost:3001/api/post", {
       method: "POST",
       headers: {
@@ -45,7 +53,7 @@ export default function CreatePost() {
       })
       .catch((error) => console.error("error:", error.message));
   }
-
+  //*******************************************HTML*******************************************
   return (
     <div className="container container--background">
       <div className="createPost--container">

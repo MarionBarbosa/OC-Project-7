@@ -1,10 +1,15 @@
-import React from "react";
+// NEW COMMENT
+// => components rendered in post, used to add a new comment to post
+// => If successful update the comment array and comment count
+
 import { useState } from "react";
 import { FaArrowCircleRight } from "react-icons/fa";
 
 export default function NewComment(props) {
+  //*************************STATES*********************************
   const [formData, setFormData] = useState({ commentContent: "" });
   const [error, setError] = useState(null);
+  const userId = +localStorage.getItem("userId");
   function handleError() {
     setError("");
   }
@@ -16,14 +21,13 @@ export default function NewComment(props) {
       };
     });
   }
-  const urlComment = "http://localhost:3001/api/post/comment";
-
-  const userId = +localStorage.getItem("userId");
+  //Sending request to API
   function handleClick(event) {
     event.preventDefault();
+    const token = localStorage.getItem("token");
     const postId = props.postId;
     const content = formData.commentContent;
-    const token = localStorage.getItem("token");
+    const urlComment = "http://localhost:3001/api/post/comment";
     fetch(urlComment, {
       method: "POST",
       headers: {
@@ -48,7 +52,7 @@ export default function NewComment(props) {
       })
       .catch((error) => console.error("error", error));
   }
-
+  //*******************************************HTML*******************************************
   return (
     <div className="newComment">
       <input

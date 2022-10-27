@@ -1,5 +1,7 @@
 const db = require("../mysql_config");
 let isAdmin = 0;
+
+//function to check if the content of the comment is empty or whitespaces
 function inputValidation(value) {
   const isEmpty = /^(?!\s*$).+/;
   if (!isEmpty.test(value)) {
@@ -9,6 +11,11 @@ function inputValidation(value) {
   }
 }
 // *******************CREATE COMMENT************************
+//**
+// 1- Check that the new comment content is valid,
+// 2- Check user has permission
+// 3- Create the comment
+//**
 exports.createComment = (req, res, next) => {
   //getting all data for new post from frontend
   const commentObject = req.body;
@@ -53,7 +60,7 @@ exports.createComment = (req, res, next) => {
     res.status(400).json({ message: "champ vide" });
   }
 };
-
+//*********************************GET COMMENTS PER POST*********************************
 exports.getPostComment = (req, res, next) => {
   //get all comments for ONE post
   const postId = req.params.postId;
@@ -67,6 +74,7 @@ exports.getPostComment = (req, res, next) => {
     }
   });
 };
+//*********************************GET ALL COMMENTS*********************************
 exports.getAllComment = (req, res, next) => {
   db.query("SELECT * FROM comment", (error, results) => {
     if (error) {
@@ -82,6 +90,12 @@ exports.getAllComment = (req, res, next) => {
 exports.modifyComment = (req, res, next) => {
   const comment = req.body;
   const commentId = req.params.commentId;
+  //**
+  // 1- Check that the new comment content is valid,
+  // 2- Check user's permisson
+  // 3- Look for the comment in database and if exist
+  // 5- Modify the comment
+  //**
   if (inputValidation(comment.content) === null) {
     db.query(
       "SELECT * FROM user WHERE id=?",
@@ -134,9 +148,14 @@ exports.modifyComment = (req, res, next) => {
   }
 };
 //*********************************DELETE COMMENT **************************************
+
+//**
+// 1- Checking user's permisson
+// 2- Look for the coment in database and if exist
+// 3- Delete the comment
+//**
 exports.deleteComment = (req, res, next) => {
   const commentId = req.params.commentId;
-  //searching for comment in database
   db.query(
     "SELECT * FROM user WHERE id=?",
     req.auth.userId,
@@ -158,7 +177,7 @@ exports.deleteComment = (req, res, next) => {
     } else if (results == 0) {
       return res.status(404).json({ error: "Comment not found" });
     } else {
-      //checking the user is authorized
+      //checking  if the user is authorized
       if (isAdmin !== 1 && results[0].userId !== req.auth.userId) {
         return res.status(400).json({ message: "access denied" });
       } else {

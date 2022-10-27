@@ -3,7 +3,7 @@ const db = require("../mysql_config");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 
-//check is fields are empty
+//check is form fields are empty or contain whitespace
 function inputValidation(value) {
   const isEmpty = /^(?!\s*$).+/;
   if (!isEmpty.test(value)) {
@@ -12,8 +12,8 @@ function inputValidation(value) {
     return null;
   }
 }
-//check email valid
-//function to check a strong password was typed.
+
+//function to check a strong password was entered.
 function checkPasswordValidation(value) {
   const isWhitespace = /^(?=.*\s)/;
   if (isWhitespace.test(value)) {
@@ -46,9 +46,17 @@ function checkPasswordValidation(value) {
   }
   return null;
 }
-
+//****************************CREATING USER ACCOUNT - SIGNUP***********************************
+// 1- Check input are not empty
+// 2- Check password is strong
+// 3- Check if email already in database
+// 3- If no,
+//      a. bcrypt to encrypt password
+//      b. Save user is database
+//      c. Return new user data and token to front
+// 4- if yes, return info to front
+//**
 exports.signup = (req, res) => {
-  //checking if the password is strong, if so password goes through Bcrypt
   const { email, password, firstName, lastName, admin } = req.body;
 
   db.query("SELECT * FROM user WHERE email=?", email, (error, results) => {
@@ -117,14 +125,21 @@ exports.signup = (req, res) => {
       } else {
         res.status(400).json({ message: "champ vide" });
       }
+      //if email already in database return
     } else if (results[0].email === req.body.email) {
       return res.status(200).json({ email: results[0].email });
     }
   });
 };
+//****************************LOGIN INTO USER ACCOUNT - SIGNIN***********************************
 
+// 3- Check if email already in database
+// 3- If yes,
+//      a. bcrypt to compare password
+//      b. Save user is database
+//      c. Return user data and token to front
+//**
 exports.login = (req, res) => {
-  //finding email in database
   const email = req.body.email;
   db.query("SELECT * FROM user WHERE email=?", email, (error, results) => {
     if (error) {
@@ -132,7 +147,6 @@ exports.login = (req, res) => {
     } else if (results == 0) {
       return res.status(404).json({ error: "User not found" });
     } else {
-      //comparing password to allow user connection
       const password = results[0].password;
       bcrypt
         .compare(req.body.password, password)
@@ -160,7 +174,7 @@ exports.login = (req, res) => {
     }
   });
 };
-
+//****************************FIND ONE USER***********************************
 exports.getOneUser = (req, res) => {
   const userId = req.params.userId;
   db.query(
