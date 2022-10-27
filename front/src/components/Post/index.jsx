@@ -34,7 +34,7 @@ export default function Post(props) {
   const styleMenu = {
     backgroundColor: showMenu ? "#ffd7d7" : "transparent",
   };
-  //Sending request to API
+  //Sending request to API to get user's firstName and lastName
   const urlUser = `http://localhost:3001/api/auth/${postUserId}`;
   useEffect(() => {
     fetch(urlUser, {
@@ -67,6 +67,12 @@ export default function Post(props) {
   const commentPerPost = props.commentData.filter(
     (comment) => comment.postId === props.postId
   );
+  //Managing comment count
+  const commentLength = commentPerPost.length;
+  const [commentCount, setCommentCount] = useState(0);
+  useEffect(() => {
+    setCommentCount(commentLength);
+  }, [commentLength]);
   //rendering each comments in post component
   const commentElements = commentPerPost.map((comment) => {
     return (
@@ -85,12 +91,6 @@ export default function Post(props) {
       />
     );
   });
-  //Managing comment count
-  const commentLength = commentPerPost.length;
-  const [commentCount, setCommentCount] = useState(0);
-  useEffect(() => {
-    setCommentCount(commentLength);
-  }, [commentLength]);
 
   ////******************************************MODAL WINDOW******************************************
   //function to open the modal windows on delete and modify on the Posts
