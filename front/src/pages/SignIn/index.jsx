@@ -37,7 +37,6 @@ export default function SignIn() {
       body: JSON.stringify(formSignin),
     })
       .then(function (res) {
-        console.log(res.status);
         if (res.ok) {
           return (
             res
