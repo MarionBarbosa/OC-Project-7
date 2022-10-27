@@ -2,6 +2,7 @@
 // => comment components to display user comment saved in database for each post
 // => contains button to open modal window to delete and modify.
 
+import { useEffect } from "react";
 import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import ModalDeleteComment from "../ModalDeleteComment";
@@ -10,8 +11,11 @@ export default function Comments(props) {
   const commentUserId = props.commentUserId;
   const loggedUserId = +localStorage.getItem("userId");
   const isAdmin = +localStorage.getItem("isAdmin");
+  const token = localStorage.getItem("token");
   //*************************STATES*********************************
   const [commentContent, setCommentContent] = useState(props.content);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   //states and functions to open and close modal windows
   const [modalDelete, setModalDelete] = useState(false);
   const [modalModify, setModalModify] = useState(false);
@@ -24,7 +28,29 @@ export default function Comments(props) {
   //Formatting the ISO date
   const date = new Date(props.timestamp);
   const dateStr = date.toLocaleString();
-
+  //Sending request to API to get user's firstName and lastName
+  const urlUser = `http://localhost:3001/api/auth/${props.commentUserId}`;
+  useEffect(() => {
+    fetch(urlUser, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json;charset=UTF-8",
+        authorization: `Bearer ${token}`,
+      },
+    })
+      .then(function (res) {
+        if (res.ok) {
+          return res
+            .json()
+            .then((data) => {
+              setFirstName(data.results[0].firstName);
+              setLastName(data.results[0].lastName);
+            })
+            .catch((error) => console.error("error:", error));
+        }
+      })
+      .catch((error) => console.error("error:", error));
+  }, []);
   //*******************************************HTML*******************************************
   return (
     <div className="post--comment">
@@ -35,7 +61,9 @@ export default function Comments(props) {
               <FaUserCircle className="post--profile--userIcon" />
             </div>
             <div className="comment--user--name">
-              <p>NAME</p>
+              <p>
+                {firstName} {lastName}
+              </p>
             </div>
           </div>
           <div className="comment--date">
