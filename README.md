@@ -10,16 +10,16 @@ La partie frontend est gérée par ReactJs, la partie backend est une API NodeJs
 
 ## **Installation sur un nouveau poste**
 
-### \* **Code**
+- **Code**
 
 Cloner le code de l'application depuis le dépôt github.
 
-### \* **Backend**
+- **Backend**
 
 Depuis le dossier /back du projet, lancer la commande npm install pour installer tous les packages.  
 Une fois fini, lancer la commande nodemon server.
 
-### \* **Frontend**
+- **Frontend**
 
 Depuis le dossier /front du projet, lancer la commande npm install pour installer tous les packages.  
 Une fois fini, lancer la commande npm start.  
