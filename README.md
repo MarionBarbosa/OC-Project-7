@@ -1,7 +1,7 @@
-#**Réseau social d'entreprise GROUPOMANIA**
-Ce site internet permet aux employés de Groupomania d'échanger au travers de publications.
-Pour chaque publication il est possible d'ajouter un commentaire et de liker.
-Un administrateur a la permission de modification et suppression des publications et des commentaires.
+> #**Réseau social d'entreprise GROUPOMANIA**
+> Ce site internet permet aux employés de Groupomania d'échanger au travers de publications.
+> Pour chaque publication il est possible d'ajouter un commentaire et de liker.
+> Un administrateur a la permission de modification et suppression des publications et des commentaires.
 
 ##**Technologies utilisées:**
 La partie frontend est gérée par ReactJs, la partie backend est une API NodeJs qui gère les requêtes du frontend vers la base de données MySQL.
