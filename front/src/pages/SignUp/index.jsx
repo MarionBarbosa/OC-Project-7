@@ -143,7 +143,6 @@ export default function SignUp() {
                 setIsAuthenticated(true);
                 navigate("/home", { replace: true });
               } else if (data.email) {
-                console.log(data.email);
                 setErrorEmail("Cet email est déjà utilisé");
               }
             })
