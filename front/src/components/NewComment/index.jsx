@@ -55,7 +55,7 @@ export default function NewComment(props) {
   //*******************************************HTML*******************************************
   return (
     <div className="newComment">
-      <input
+      <textarea
         type="text"
         onChange={handleChange}
         onClick={handleError}
@@ -63,6 +63,7 @@ export default function NewComment(props) {
         className="post--newComments"
         name="commentContent"
         value={formData.commentContent}
+        maxLength={2500}
       />
       {error && <p style={{ color: "red" }}>{error}</p>}
       <div>
