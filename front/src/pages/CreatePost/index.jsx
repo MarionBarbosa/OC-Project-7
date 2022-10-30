@@ -16,7 +16,7 @@ export default function CreatePost() {
   const [file, setFile] = useState();
   const [image, setImage] = useState("");
   const [content, setContent] = useState("");
-
+  const [error, setError] = useState(null);
   const imageRef = useRef(null);
 
   //Using context to change the isAuthenticated state if needed
@@ -48,7 +48,14 @@ export default function CreatePost() {
             })
             .catch((error) => console.error("error:", error));
         } else if (res.status === 401) {
+          localStorage.clear();
           setIsAuthenticated(false);
+        } else if (res.status === 400) {
+          setContent("");
+          setError("Ce champ ne peut être vide");
+          formData.delete("content", content);
+          formData.delete("userId", userId);
+          formData.delete("image", image);
         }
       })
       .catch((error) => console.error("error:", error.message));
@@ -74,7 +81,20 @@ export default function CreatePost() {
             placeholder="Que souhaitez-vous partager aujourd'hui?"
             value={content}
             onChange={(event) => setContent(event.target.value)}
+            maxLength={2500}
           />
+          {error && (
+            <p
+              style={{
+                color: "red",
+                marginTop: 3,
+                fontWeight: "bold",
+                textAlign: "center",
+              }}
+            >
+              {error}
+            </p>
+          )}
           <label for="input-file" className="upload--image">
             Ajouter une image
             <FaRegImage className="icon-upload-image" />
