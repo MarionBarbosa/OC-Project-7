@@ -63,7 +63,7 @@ export default function ModalModify(props) {
 
   //*******************************************HTML*******************************************
   return (
-    <div className="modal--background">
+    <div className="modal--background" aria-modal="true">
       <div className="modal--modify--container">
         <h2 className="modal--container--modify--header">
           Modifier la publication
@@ -94,11 +94,16 @@ export default function ModalModify(props) {
             name="postContent"
             defaultValue={props.postContent}
             onClick={handleError}
+            tabIndex={1}
           />
           {error && <p style={{ color: "red" }}>{error}</p>}
           <label htmlFor="input-file" className="upload--image">
             Ajouter une image
-            <FaRegImage className="icon-upload-image" />
+            <FaRegImage
+              className="icon-upload-image"
+              tabIndex={2}
+              aria-label="icone téléchargement d'image"
+            />
             <input
               id="input-file"
               className="input--image"
@@ -118,6 +123,7 @@ export default function ModalModify(props) {
                 window.location.reload();
               }}
               className="modal--button"
+              tabIndex={3}
             >
               Annuler
             </button>
@@ -125,6 +131,7 @@ export default function ModalModify(props) {
               onClick={handleClick}
               id={props.postId}
               className="modal--button"
+              tabIndex={4}
             >
               Confirmer
             </button>

@@ -71,6 +71,7 @@ export default function NewComment(props) {
           className="newComment--button--icon"
           onClick={handleClick}
           id={props.postId}
+          aria-label="icone de validation de commentaire"
         />
       </div>
     </div>

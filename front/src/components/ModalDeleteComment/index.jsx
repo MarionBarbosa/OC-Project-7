@@ -42,7 +42,7 @@ export default function ModalDeleteComment(props) {
   }
   //*******************************************HTML*******************************************
   return (
-    <div className="modal--background">
+    <div className="modal--background" aria-modal="true">
       <div className="modal--container">
         <h2>Confirmer la suppression</h2>
 

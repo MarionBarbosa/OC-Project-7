@@ -97,7 +97,10 @@ export default function CreatePost() {
           )}
           <label for="input-file" className="upload--image">
             Ajouter une image
-            <FaRegImage className="icon-upload-image" />
+            <FaRegImage
+              className="icon-upload-image"
+              aria-label="icone téléchargement d'image"
+            />
             <input
               id="input-file"
               className="input--image"

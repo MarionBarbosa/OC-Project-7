@@ -230,7 +230,18 @@ export default function SignUp() {
               onChange={handleChange}
               required
             />
-            {errorPassword && <p style={{ color: "red" }}>{errorPassword}</p>}
+            {errorPassword && (
+              <p
+                style={{
+                  color: "red",
+                  marginTop: 3,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                }}
+              >
+                {errorPassword}
+              </p>
+            )}
 
             <button className="signIn--button" onClick={submitAccount}>
               S'inscrire

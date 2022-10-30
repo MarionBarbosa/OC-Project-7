@@ -64,9 +64,9 @@ export default function ModalModifyComment(props) {
   }
   //*******************************************HTML*******************************************
   return (
-    <div className="modal--background">
-      <div className="modal--container--modify">
-        <h2>Modifier le commentaire</h2>
+    <div className="modal--background" aria-modal="true">
+      <div className="modal--modify--comment--container">
+        <h2 className="modal--header">Modifier le commentaire</h2>
         <textarea
           type="text"
           onChange={handleChange}
@@ -76,8 +76,8 @@ export default function ModalModifyComment(props) {
           name="commentContent"
           value={formData.commentContent}
         />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <div className="modal--button">
+        {error && <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>}
+        <div className="modal--button button--container">
           <button onClick={() => props.closeModalModify(false)}>Annuler</button>
           <button onClick={handleClick} id={props.commentId}>
             Confirmer

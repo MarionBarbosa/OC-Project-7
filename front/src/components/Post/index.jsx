@@ -154,14 +154,14 @@ export default function Post(props) {
         <div className="post--interaction">
           <div className="post--interaction--icon">
             <Likes postId={props.postId} />
-            <div
-              className="post--showComments"
-              onClick={handleClickComments}
-              id={props.postId}
-            >
-              {commentCount}
-              <FaRegCommentAlt className="comment-icon" tabIndex="0" />
-            </div>
+            <button className="post--showComments" id={props.postId}>
+              <p className="count--container">{commentCount}</p>
+              <FaRegCommentAlt
+                className="comment-icon"
+                onClick={handleClickComments}
+                aria-label="icone commentaire"
+              />
+            </button>
           </div>
 
           {showComments ? <div>{commentElements}</div> : null}

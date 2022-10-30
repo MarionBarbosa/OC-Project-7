@@ -84,7 +84,9 @@ export default function SignIn() {
               name="password"
               onClick={handleClick}
             />
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && (
+              <p style={{ color: "red", fontWeight: "bold" }}>{error}</p>
+            )}
             <button className="signIn--button" onClick={handleSubmit}>
               Se connecter
             </button>

@@ -43,7 +43,7 @@ export default function ModalDelete(props) {
   }
   //*******************************************HTML*******************************************
   return (
-    <div className="modal--background">
+    <div className="modal--background" aria-modal="true">
       <div className="modal--container">
         <h2 className="modal--header">Confirmer la suppression</h2>
 

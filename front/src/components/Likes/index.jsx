@@ -109,8 +109,8 @@ export default function Likes(props) {
   }
   //*******************************************HTML*******************************************
   return (
-    <div className="post--like">
-      {likeCount}
+    <button className="post--like">
+      <p className="count--container">{likeCount}</p>
       {likes ? (
         <FaThumbsUp
           id={props.postId}
@@ -118,6 +118,7 @@ export default function Likes(props) {
           className="full-thumb"
           style={styleLikesFull}
           tabIndex="0"
+          aria-label="icone like"
         />
       ) : (
         <FaRegThumbsUp
@@ -126,8 +127,9 @@ export default function Likes(props) {
           className="empty-thumb"
           style={styleLikesEmpty}
           tabIndex="0"
+          aria-label="icone unlike"
         />
       )}
-    </div>
+    </button>
   );
 }
