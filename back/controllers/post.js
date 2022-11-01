@@ -144,7 +144,11 @@ exports.modifyPost = (req, res, next) => {
       } else {
         //getting the old image name in case it needs deleting
         if (req.file) {
-          const oldFilename = results[0].imageUrl.split("/images/")[1];
+          let oldFilename;
+          if (results[0].imageUrl) {
+            oldFilename = results[0].imageUrl.split("/images/")[1];
+          }
+
           const postImage = {
             ...postObject,
             imageUrl: `${req.protocol}://${req.get("host")}/images/${
@@ -162,9 +166,12 @@ exports.modifyPost = (req, res, next) => {
                 return res.status(404).json({ error: "Post not modified" });
               } else {
                 //deleting previous image
-                fs.unlink(`images/${oldFilename}`, (err) => {
-                  message: "Image not deleted";
-                });
+                if (oldFilename) {
+                  fs.unlink(`images/${oldFilename}`, (err) => {
+                    message: "Image not deleted";
+                  });
+                }
+
                 db.query(
                   "SELECT * FROM post WHERE id=?",
                   postId,
