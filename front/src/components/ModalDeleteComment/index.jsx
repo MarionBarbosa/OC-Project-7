@@ -44,9 +44,9 @@ export default function ModalDeleteComment(props) {
   return (
     <div className="modal--background" aria-modal="true">
       <div className="modal--container">
-        <h2>Confirmer la suppression</h2>
+        <h2 className="modal--header">Confirmer la suppression</h2>
 
-        <div className="modal--button">
+        <div className="modal--button button--container">
           <button onClick={() => props.closeModalDelete(false)}>Annuler</button>
           <button onClick={handleClickDeleteComment} id={props.commentId}>
             Supprimer
